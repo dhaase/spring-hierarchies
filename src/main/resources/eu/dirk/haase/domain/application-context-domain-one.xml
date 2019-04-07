@@ -10,6 +10,21 @@
     <beans>
 
 
+        <bean id="serviceOne" class="eu.dirk.haase.bean.ServiceOneImpl" >
+            <property name="value" value="domain-one-A"/>
+        </bean>
+
+
+        <bean id="serviceTwo" class="eu.dirk.haase.bean.ServiceTwoImpl" >
+            <property name="value" value="domain-one-B"/>
+        </bean>
+
+
+        <bean id="mainServiceTwo" class="eu.dirk.haase.context.DelegatingFactoryBean" >
+            <property name="objectType" value="eu.dirk.haase.bean.MainServiceTwo"/>
+        </bean>
+
+
     </beans>
 
 

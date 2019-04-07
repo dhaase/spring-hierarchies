@@ -10,17 +10,14 @@
     <beans>
 
 
-        <bean id="applicationContextChildToParentPromoter" class="eu.dirk.haase.context.ApplicationContextChildToParentPromoter" />
-
-
-        <bean id="mainServiceOne" class="eu.dirk.haase.bean.MainServiceOneImpl" >
-            <property name="value" value="main-one-A"/>
+        <bean id="application-context-domain-one" class="eu.dirk.haase.context.PrivateApplicationContext" >
+            <property name="configLocations">
+                <list>
+                    <value>eu/dirk/haase/domain/application-context-domain-one.xml</value>
+                </list>
+            </property>
         </bean>
 
-
-        <bean id="mainServiceTwo" class="eu.dirk.haase.bean.MainServiceTwoImpl" >
-            <property name="value" value="main-two-A"/>
-        </bean>
 
 
     </beans>
