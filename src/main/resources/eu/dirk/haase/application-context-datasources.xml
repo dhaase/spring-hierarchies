@@ -9,11 +9,6 @@
 
     <beans>
 
-        <bean id="app-ctx-one" class="eu.dirk.haase.bean.ApplicationContextRegistry" />
-
-        <bean id="bean1" class="eu.dirk.haase.bean.Bean1"/>
-
-        <bean id="springEnvironment" class="eu.dirk.haase.bean.SpringEnvironment"/>
 
     </beans>
 

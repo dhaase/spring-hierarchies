@@ -18,7 +18,7 @@ public class Main {
 
 
     public static void single() {
-        String[] resources1 = {"/eu/dirk/haase/application-context-one.xml"};
+        String[] resources1 = {"/eu/dirk/haase/application-context-datasources.xml"};
         ClassPathXmlApplicationContext ctx1 = new ClassPathXmlApplicationContext(resources1);
 
         boolean isBeanFactory1 = ApplicationContextRegistry.containsBeanFactory("app-ctx-one");
@@ -27,7 +27,7 @@ public class Main {
         boolean isBeanFactory2 = ApplicationContextRegistry.containsBeanFactory("app-ctx-two");
         System.out.println("isBeanFactory2: " + isBeanFactory2);
 
-        String[] resources2 = {"/eu/dirk/haase/application-context-two.xml"};
+        String[] resources2 = {"/eu/dirk/haase/application-context-main.xml"};
         ClassPathXmlApplicationContext ctx2 = new ClassPathXmlApplicationContext(resources2);
         ApplicationContextRegistry reg2 = ctx2.getBean(ApplicationContextRegistry.class);
 
@@ -47,7 +47,7 @@ public class Main {
 
 
     public static void concurrent() throws ExecutionException, InterruptedException {
-        String[] resources1 = {"/eu/dirk/haase/application-context-one.xml"};
+        String[] resources1 = {"/eu/dirk/haase/application-context-datasources.xml"};
 
         ExecutorService service = Executors.newCachedThreadPool();
 
