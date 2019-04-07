@@ -24,7 +24,7 @@ public class ChildApplicationContextRegistrator implements ApplicationContextAwa
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 }

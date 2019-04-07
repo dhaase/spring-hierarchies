@@ -38,20 +38,7 @@ public class PropagatingApplicationContext implements ApplicationContextAware, I
         return domainApplicationContext;
     }
 
-    protected String resolvePath(String path) {
-        return this.parentApplicationContext.getEnvironment().resolveRequiredPlaceholders(path);
-    }
-
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        this.parentApplicationContext = (ConfigurableApplicationContext) applicationContext;
-    }
-
-    public void setConfigLocations(final String... locations) {
-        this.configLocations = locations;
-    }
-
-    public void initConfigLocations() {
+    private void initConfigLocations() {
         final String[] locations = this.configLocations;
         if (locations != null) {
             Assert.noNullElements(locations, "Config locations must not be null");
@@ -62,6 +49,19 @@ public class PropagatingApplicationContext implements ApplicationContextAware, I
         } else {
             this.configLocations = null;
         }
+    }
+
+    private String resolvePath(final String path) {
+        return this.parentApplicationContext.getEnvironment().resolveRequiredPlaceholders(path);
+    }
+
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        this.parentApplicationContext = (ConfigurableApplicationContext) applicationContext;
+    }
+
+    public void setConfigLocations(final String... locations) {
+        this.configLocations = locations;
     }
 
 }

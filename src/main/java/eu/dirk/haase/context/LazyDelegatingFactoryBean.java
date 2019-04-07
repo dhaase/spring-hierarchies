@@ -50,7 +50,7 @@ public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, Application
     }
 
     @Override
-    public void setBeanName(String beanName) {
+    public void setBeanName(final String beanName) {
         this.beanName = beanName;
     }
 
@@ -74,7 +74,12 @@ public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, Application
                 if (childApplicationContext.containsLocalBean(beanName)) {
                     bean = childApplicationContext.getBean(beanName);
                 } else {
-                    bean = childApplicationContext.getBean(objectType);
+                    final String[] nameArray = childApplicationContext.getBeanNamesForType(objectType);
+                    if (nameArray.length == 1) {
+                        bean = childApplicationContext.getBean(objectType);
+                    } else {
+                        // mock
+                    }
                 }
             }
             return method.invoke(bean, args);
