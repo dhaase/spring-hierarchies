@@ -11,7 +11,7 @@
 
 
         <bean id="domainModule" class="java.lang.String">
-            <constructor-arg><value>one</value></constructor-arg>
+            <constructor-arg><value>two</value></constructor-arg>
         </bean>
 
 

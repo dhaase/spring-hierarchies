@@ -25,7 +25,6 @@ public class PrivateApplicationContext implements ApplicationContextAware, Initi
         for (String beanName : beanNames) {
             if (!parentApplicationContext.containsBean(beanName)) {
                 final String domainBeanName = domainName + "." + beanName;
-                System.out.println("registerSingleton: " + domainBeanName);
                 parentApplicationContext.getBeanFactory().registerSingleton(domainBeanName, this.domainApplicationContext.getBean(beanName));
             }
         }
