@@ -1,6 +1,6 @@
 package eu.dirk.haase.bean;
 
-public interface MainServiceOne {
+public interface MainServiceOne extends MwsBean {
     void execute();
 
     String getValue();

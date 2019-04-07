@@ -10,7 +10,7 @@
     <beans>
 
 
-        <bean id="applicationContextChildToParentPromoter" class="eu.dirk.haase.context.ApplicationContextChildToParentPromoter" />
+        <bean id="childApplicationContextRegistrator" class="eu.dirk.haase.context.ChildApplicationContextRegistrator" />
 
 
         <bean id="mainServiceOne" class="eu.dirk.haase.bean.MainServiceOneImpl" >

@@ -11,11 +11,7 @@
 
 
         <bean id="application-context-domain-one" class="eu.dirk.haase.context.PrivateApplicationContext" >
-            <property name="configLocations">
-                <list>
-                    <value>eu/dirk/haase/domain/application-context-domain-one.xml</value>
-                </list>
-            </property>
+            <property name="configLocations" value="eu/dirk/haase/domain/application-context-domain-one.xml" />
         </bean>
 
 

@@ -19,8 +19,16 @@ public class PrivateApplicationContext implements ApplicationContextAware, Initi
         initConfigLocations();
         this.domainApplicationContext = new ClassPathXmlApplicationContext(configLocations, parentApplicationContext);
 
-        parentApplicationContext.getBeanFactory().registerSingleton("serviceOne", this.domainApplicationContext.getBean("serviceOne"));
-        parentApplicationContext.getBeanFactory().registerSingleton("serviceTwo", this.domainApplicationContext.getBean("serviceTwo"));
+        final String domainName = this.domainApplicationContext.getBean("domainModule", String.class);
+
+        final String[] beanNames = this.domainApplicationContext.getBeanNamesForType(Object.class);
+        for (String beanName : beanNames) {
+            if (!parentApplicationContext.containsBean(beanName)) {
+                final String domainBeanName = domainName + "." + beanName;
+                System.out.println("registerSingleton: " + domainBeanName);
+                parentApplicationContext.getBeanFactory().registerSingleton(domainBeanName, this.domainApplicationContext.getBean(beanName));
+            }
+        }
     }
 
     public ApplicationContext getDomainApplicationContext() {

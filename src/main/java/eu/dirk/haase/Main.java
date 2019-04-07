@@ -5,6 +5,7 @@ import eu.dirk.haase.bean.MainServiceTwo;
 import eu.dirk.haase.bean.ServiceTwo;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class Main {
@@ -34,7 +35,9 @@ public class Main {
         ctx_main.setConfigLocations(resources3);
         ctx_main.refresh();
 
-        ServiceTwo serviceTwo = ctx_main.getBean("serviceTwo", ServiceTwo.class);
+        System.out.println(Arrays.asList(ctx_main.getBeanNamesForType(Object.class)));
+
+        ServiceTwo serviceTwo = ctx_main.getBean("one.serviceTwo", ServiceTwo.class);
         serviceTwo.execute();
     }
 

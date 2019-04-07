@@ -20,8 +20,13 @@
         </bean>
 
 
-        <bean id="mainServiceTwo" class="eu.dirk.haase.context.DelegatingFactoryBean" >
+        <bean id="mainServiceTwo" class="eu.dirk.haase.context.LazyDelegatingFactoryBean" >
             <property name="objectType" value="eu.dirk.haase.bean.MainServiceTwo"/>
+        </bean>
+
+
+        <bean id="domainModule" class="java.lang.String">
+            <constructor-arg><value>one</value></constructor-arg>
         </bean>
 
 

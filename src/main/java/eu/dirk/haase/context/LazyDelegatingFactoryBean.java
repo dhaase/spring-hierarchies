@@ -11,15 +11,17 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-public class DelegatingFactoryBean<T> implements FactoryBean<T>, ApplicationContextAware, BeanNameAware {
+import static eu.dirk.haase.context.ChildApplicationContextRegistrator.CHILD_APPLICATION_CONTEXT;
+
+public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, ApplicationContextAware, BeanNameAware {
 
     private String beanName;
     private ApplicationContext domainApplicationContext;
     private Class<?> objectType;
 
     @Override
-    public T getObject() throws Exception {
-        return newProxyInstance(this.objectType, this.beanName);
+    public T getObject() {
+        return newProxyInstance();
     }
 
     @Override
@@ -37,10 +39,10 @@ public class DelegatingFactoryBean<T> implements FactoryBean<T>, ApplicationCont
     }
 
     @SuppressWarnings("unchecked")
-    private T newProxyInstance(Class<?> iface, final String beanName) {
+    private T newProxyInstance() {
         ClassLoader classLoader = ServiceOne.class.getClassLoader();
-        Class<?>[] ifaces = {iface};
-        return (T) Proxy.newProxyInstance(classLoader, ifaces, new LazyProxyHandler(this.domainApplicationContext, beanName));
+        Class<?>[] ifaces = {this.objectType};
+        return (T) Proxy.newProxyInstance(classLoader, ifaces, new LazyProxyHandler(this.domainApplicationContext, this.objectType, this.beanName));
     }
 
     @Override
@@ -53,25 +55,28 @@ public class DelegatingFactoryBean<T> implements FactoryBean<T>, ApplicationCont
         this.beanName = beanName;
     }
 
-    static class LazyProxyHandler implements InvocationHandler {
+    private static class LazyProxyHandler implements InvocationHandler {
 
         private final String beanName;
         private final ApplicationContext domainApplicationContext;
+        private final Class<?> objectType;
         private Object bean;
 
-        LazyProxyHandler(final ApplicationContext domainApplicationContext, final String beanName) {
+        LazyProxyHandler(final ApplicationContext domainApplicationContext, final Class<?> objectType, final String beanName) {
             this.domainApplicationContext = domainApplicationContext;
+            this.objectType = objectType;
             this.beanName = beanName;
         }
 
         @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-            if (bean == null) {
-                final ApplicationContext ctx = this.domainApplicationContext.getBean("childApplicationContext", ApplicationContext.class);
-                bean = ctx.getBean(beanName);
-            }
-            if ("toString".equals(method.getName())) {
-                return "proxy";
+            if ((bean == null) && this.domainApplicationContext.containsBean(CHILD_APPLICATION_CONTEXT)) {
+                final ApplicationContext ctx = this.domainApplicationContext.getBean(CHILD_APPLICATION_CONTEXT, ApplicationContext.class);
+                if (ctx.containsLocalBean(beanName)) {
+                    bean = ctx.getBean(beanName);
+                } else {
+                    bean = ctx.getBean(objectType);
+                }
             }
             return method.invoke(bean, args);
         }
