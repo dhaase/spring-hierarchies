@@ -20,7 +20,7 @@
         </bean>
 
 
-        <bean id="mainServiceTwo" class="eu.dirk.haase.context.LazyDelegatingFactoryBean" >
+        <bean id="mainServiceTwonnn" class="eu.dirk.haase.context.LazyDelegatingFactoryBean" >
             <property name="objectType" value="eu.dirk.haase.bean.MainServiceTwo"/>
         </bean>
 

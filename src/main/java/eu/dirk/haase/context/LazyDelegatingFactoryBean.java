@@ -76,7 +76,12 @@ public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, Application
                 } else {
                     final String[] nameArray = childApplicationContext.getBeanNamesForType(objectType);
                     if (nameArray.length == 1) {
-                        bean = childApplicationContext.getBean(objectType);
+                        bean = childApplicationContext.getBean(this.objectType);
+                    } else if (nameArray.length > 1) {
+                        throw new IllegalStateException("No qualifying bean of type '" +
+                                this.objectType +
+                                "' available: expected single matching bean but found " +
+                                nameArray.length);
                     } else {
                         // mock
                     }
