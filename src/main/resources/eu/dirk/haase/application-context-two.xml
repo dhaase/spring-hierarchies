@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <beans>
+
+        <bean id="app-ctx-two" class="eu.dirk.haase.bean.ApplicationContextRegistry">
+        </bean>
+
+        <bean id="bean2" class="eu.dirk.haase.bean.Bean2" />
+        <bean id="bean3" class="eu.dirk.haase.bean.Bean3" />
+
+    </beans>
+
+
+</beans>
