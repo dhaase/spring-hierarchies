@@ -35,8 +35,6 @@ public class Main {
         ctx_main.setConfigLocations(resources3);
         ctx_main.refresh();
 
-        System.out.println(Arrays.asList(ctx_main.getBeanNamesForType(Object.class)));
-
         ServiceTwo serviceTwo = ctx_main.getBean("one.serviceTwo", ServiceTwo.class);
         serviceTwo.execute();
     }
