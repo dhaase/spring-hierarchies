@@ -2,13 +2,14 @@ package eu.dirk.haase.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Assert;
 
-public class PrivateApplicationContext implements ApplicationContextAware, InitializingBean {
+public class PropagatingApplicationContext implements ApplicationContextAware, InitializingBean {
 
     private String[] configLocations;
     private ConfigurableApplicationContext domainApplicationContext;
@@ -21,12 +22,13 @@ public class PrivateApplicationContext implements ApplicationContextAware, Initi
 
         final String domainName = this.domainApplicationContext.getBean("domainModule", String.class);
 
-        final String[] beanNames = this.domainApplicationContext.getBeanNamesForType(Object.class);
-        for (String beanName : beanNames) {
+        final String[] beanNameArray = this.domainApplicationContext.getBeanNamesForType(Object.class);
+        for (final String beanName : beanNameArray) {
             if (!parentApplicationContext.containsBean(beanName)) {
                 final String domainBeanName = domainName + "." + beanName;
                 if (!parentApplicationContext.containsBean(domainBeanName)) {
-                    parentApplicationContext.getBeanFactory().registerSingleton(domainBeanName, this.domainApplicationContext.getBean(beanName));
+                    final ConfigurableListableBeanFactory beanFactory = parentApplicationContext.getBeanFactory();
+                    beanFactory.registerSingleton(domainBeanName, this.domainApplicationContext.getBean(beanName));
                 }
             }
         }
@@ -41,16 +43,16 @@ public class PrivateApplicationContext implements ApplicationContextAware, Initi
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.parentApplicationContext = (ConfigurableApplicationContext) applicationContext;
     }
 
-    public void setConfigLocations(String... locations) {
+    public void setConfigLocations(final String... locations) {
         this.configLocations = locations;
     }
 
     public void initConfigLocations() {
-        String[] locations = this.configLocations;
+        final String[] locations = this.configLocations;
         if (locations != null) {
             Assert.noNullElements(locations, "Config locations must not be null");
             this.configLocations = new String[locations.length];

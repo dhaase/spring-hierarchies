@@ -2,6 +2,7 @@ package eu.dirk.haase.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,11 +14,12 @@ public class ChildApplicationContextRegistrator implements ApplicationContextAwa
 
     @Override
     public void afterPropertiesSet() {
-        ConfigurableApplicationContext parent = (ConfigurableApplicationContext) applicationContext.getParent();
-        if (parent.containsLocalBean(CHILD_APPLICATION_CONTEXT)) {
-            throw new IllegalStateException(CHILD_APPLICATION_CONTEXT + " is already defined");
+        final ConfigurableApplicationContext parentApplicationContext = (ConfigurableApplicationContext) applicationContext.getParent();
+        if (parentApplicationContext.containsLocalBean(CHILD_APPLICATION_CONTEXT)) {
+            throw new IllegalStateException(CHILD_APPLICATION_CONTEXT + " is already defined in ApplicationContext(" + parentApplicationContext.getId() + ")");
         } else {
-            parent.getBeanFactory().registerSingleton(CHILD_APPLICATION_CONTEXT, applicationContext);
+            final ConfigurableListableBeanFactory beanFactory = parentApplicationContext.getBeanFactory();
+            beanFactory.registerSingleton(CHILD_APPLICATION_CONTEXT, applicationContext);
         }
     }
 

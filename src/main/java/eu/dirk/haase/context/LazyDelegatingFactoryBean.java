@@ -1,6 +1,5 @@
 package eu.dirk.haase.context;
 
-import eu.dirk.haase.bean.ServiceOne;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;
@@ -29,7 +28,7 @@ public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, Application
         return this.objectType;
     }
 
-    public void setObjectType(Class<?> objectType) {
+    public void setObjectType(final Class<?> objectType) {
         this.objectType = objectType;
     }
 
@@ -40,13 +39,13 @@ public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, Application
 
     @SuppressWarnings("unchecked")
     private T newProxyInstance() {
-        ClassLoader classLoader = ServiceOne.class.getClassLoader();
-        Class<?>[] ifaces = {this.objectType};
+        final ClassLoader classLoader = LazyDelegatingFactoryBean.class.getClassLoader();
+        final Class<?>[] ifaces = {this.objectType};
         return (T) Proxy.newProxyInstance(classLoader, ifaces, new LazyProxyHandler(this.domainApplicationContext, this.objectType, this.beanName));
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.domainApplicationContext = applicationContext;
     }
 
@@ -71,11 +70,11 @@ public class LazyDelegatingFactoryBean<T> implements FactoryBean<T>, Application
         @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
             if ((bean == null) && this.domainApplicationContext.containsBean(CHILD_APPLICATION_CONTEXT)) {
-                final ApplicationContext ctx = this.domainApplicationContext.getBean(CHILD_APPLICATION_CONTEXT, ApplicationContext.class);
-                if (ctx.containsLocalBean(beanName)) {
-                    bean = ctx.getBean(beanName);
+                final ApplicationContext childApplicationContext = this.domainApplicationContext.getBean(CHILD_APPLICATION_CONTEXT, ApplicationContext.class);
+                if (childApplicationContext.containsLocalBean(beanName)) {
+                    bean = childApplicationContext.getBean(beanName);
                 } else {
-                    bean = ctx.getBean(objectType);
+                    bean = childApplicationContext.getBean(objectType);
                 }
             }
             return method.invoke(bean, args);

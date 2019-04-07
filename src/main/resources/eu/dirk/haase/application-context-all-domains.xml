@@ -10,7 +10,7 @@
     <beans>
 
 
-        <bean id="application-context-domain-one" class="eu.dirk.haase.context.PrivateApplicationContext" >
+        <bean id="application-context-domain-one" class="eu.dirk.haase.context.PropagatingApplicationContext" >
             <property name="configLocations" value="eu/dirk/haase/domain/application-context-domain-one.xml" />
         </bean>
 
