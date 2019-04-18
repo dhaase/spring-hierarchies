@@ -15,6 +15,11 @@
         </bean>
 
 
+        <bean id="myString" class="java.lang.String">
+            <qualifier type="eu.dirk.haase.MyQualifier" value="one"/>
+            <constructor-arg><value>hallo</value></constructor-arg>
+        </bean>
+
 
     </beans>
 
