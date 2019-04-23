@@ -1,5 +1,6 @@
 package eu.dirk.haase;
 
+import eu.dirk.haase.bean.MainServiceTwo;
 import eu.dirk.haase.bean.ServiceTwo;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -10,6 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -31,9 +33,7 @@ public class Main {
         ctx_all_domains.setParent(ctx_datasources);
         ctx_all_domains.setConfigLocations(resources2);
         ctx_all_domains.refresh();
-
-        String value = getBean(ctx_all_domains, String.class, MyQualifier.class, "one1");
-        System.out.println(value);
+        System.out.println("getBeanDefinitionNames: " + ctx_all_domains.getBean("org.springframework.context.annotation.internalAutowiredAnnotationProcessor").getClass());
 
         String[] resources3 = {"/eu/dirk/haase/application-context-main.xml"};
         ClassPathXmlApplicationContext ctx_main = new ClassPathXmlApplicationContext();
@@ -45,6 +45,8 @@ public class Main {
 
         ServiceTwo serviceTwo = ctx_main.getBean("one.serviceTwo", ServiceTwo.class);
         serviceTwo.execute();
+
+        System.out.println("mainServiceTwo: " + ctx_main.getBean("mainServiceTwo", MainServiceTwo.class).getMainServiceOne());
     }
 
 

@@ -6,4 +6,6 @@ public interface MainServiceTwo extends MwsBean {
     String getValue();
 
     void setValue(String value);
+
+    MainServiceOne getMainServiceOne();
 }
