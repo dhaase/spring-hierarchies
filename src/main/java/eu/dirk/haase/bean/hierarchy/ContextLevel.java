@@ -21,10 +21,10 @@ final class ContextLevel {
     ContextLevel(final Set<ContextRegistry.BeanType> parentBeanTypes,
                  final Set<ContextRegistry.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
-        final HashSet<ContextRegistry.BeanType> set = new HashSet<>(thisBeanTypes);
-        set.addAll(parentBeanTypes);
+        final HashSet<ContextRegistry.BeanType> beanTypeSet = new HashSet<>(thisBeanTypes);
+        beanTypeSet.addAll(parentBeanTypes);
         this.applicationContextSupplier = applicationContextSupplier;
-        this.inheritBeanTypes = Collections.unmodifiableSet(set);
+        this.inheritBeanTypes = Collections.unmodifiableSet(beanTypeSet);
     }
 
     Supplier<ApplicationContext> getApplicationContextSupplier() {

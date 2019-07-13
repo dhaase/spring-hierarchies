@@ -26,7 +26,7 @@ final class MWSContextHierarchy implements ContextRegistry {
         this.contextLevelList.add(two);
         this.contextLevelList.add(three);
         this.contextLevelList.add(four);
-        return Collections.unmodifiableSet(four.getInheritBeanTypes());
+        return four.getInheritBeanTypes();
     }
 
 
