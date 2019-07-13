@@ -10,7 +10,7 @@ public class Main {
 
 
     public static void main(String... args) {
-        final ContextRegistry contextHierarchy = ContextRegistry.instance();
+        final ContextRegistry contextHierarchy = ContextRegistry.global();
         final ApplicationContext context = contextHierarchy.findApplicationContextForBeansOf(contextHierarchy.allBeanTypes()).get();
 
 //        final ApplicationContext context = contextHierarchy.findApplicationContextForBeansOf(ContextRegistry.BeanType.One,

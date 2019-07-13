@@ -5,6 +5,11 @@ import org.springframework.context.ApplicationContext;
 import java.util.*;
 import java.util.function.Supplier;
 
+
+/**
+ * Baut eine Definition von einer Hierarchie von {@link ApplicationContext}e
+ * in der MWS auf.
+ */
 final class MWSContextHierarchy implements ContextRegistry {
 
     static final ContextRegistry SINGLETON = new MWSContextHierarchy();

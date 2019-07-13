@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+/**
+ * Definition einer {@link ApplicationContext}-Ebene.
+ */
 final class ContextLevel {
 
     private final Supplier<ApplicationContext> applicationContextSupplier;
