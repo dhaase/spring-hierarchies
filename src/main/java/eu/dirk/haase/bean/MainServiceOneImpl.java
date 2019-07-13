@@ -6,11 +6,11 @@ public class MainServiceOneImpl implements MainServiceOne {
 
     private String value;
 
-    @Autowired
+    //@Autowired
     private ServiceOne serviceOne;
-
-    @Autowired
-    private ServiceTwo serviceTwo;
+//
+//    @Autowired
+//    private ServiceTwo serviceTwo;
 
     @Override
     public String getValue() {
@@ -25,8 +25,8 @@ public class MainServiceOneImpl implements MainServiceOne {
     @Override
     public void execute() {
         System.out.println("Main-Service-One: " + this.value);
-        serviceOne.execute();
-        serviceTwo.execute();
+//        serviceOne.execute();
+//        serviceTwo.execute();
     }
 
 }

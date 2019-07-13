@@ -71,7 +71,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * both approaches.
  * <p>
  * <p>In addition to regular injection points as discussed above, this post-processor
- * also handles Spring's {@link Lookup @Lookup} annotation which identifies lookup
+ * also handles Spring's {@link Lookup @Lookup} annotation which identifies instance
  * methods to be replaced by the container at runtime. This is essentially a type-safe
  * version of {@code getBean(Class, args)} and {@code getBean(String, args)},
  * See {@link Lookup @Lookup's javadoc} for details.
@@ -187,7 +187,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
     public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, final String beanName)
             throws BeanCreationException {
 
-        // Let's check for lookup methods here..
+        // Let's check for instance methods here..
         if (!this.lookupMethodsChecked.contains(beanName)) {
             try {
                 ReflectionUtils.doWithMethods(beanClass, new ReflectionUtils.MethodCallback() {
@@ -210,7 +210,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
                 throw new BeanCreationException(beanName, "Lookup method resolution failed", ex);
             } catch (NoClassDefFoundError err) {
                 throw new BeanCreationException(beanName, "Failed to introspect bean class [" + beanClass.getName() +
-                        "] for lookup method metadata: could not find class that it depends on", err);
+                        "] for instance method metadata: could not find class that it depends on", err);
             }
             this.lookupMethodsChecked.add(beanName);
         }

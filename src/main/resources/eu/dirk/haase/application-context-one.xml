@@ -10,14 +10,8 @@
     <beans>
 
 
-        <bean id="application-context-domain-one" class="eu.dirk.haase.context.PropagatingApplicationContext" >
-            <property name="configLocations" value="eu/dirk/haase/domain/application-context-domain-one.xml" />
-        </bean>
-
-
-        <bean id="myString" class="java.lang.String">
-            <qualifier type="eu.dirk.haase.MyQualifier" value="one"/>
-            <constructor-arg><value>hallo</value></constructor-arg>
+        <bean id="myBean_1" class="eu.dirk.haase.bean.MwsBeanImpl" >
+            <property name="name" value="myBean_1"/>
         </bean>
 
 

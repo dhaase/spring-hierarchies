@@ -9,6 +9,12 @@
 
     <beans>
 
+        <bean id="myBeanPostProcessor" class="eu.dirk.haase.scope.MyBeanPostProcessor">
+            <property name="contextId" value="ctx_two"/>
+        </bean>
+        <bean id="CustomBeanFactoryPostProcessor" class="eu.dirk.haase.scope.CustomBeanFactoryPostProcessor"/>
+
+        <bean id="mainServiceOne" class="eu.dirk.haase.bean.MainServiceOneImpl" scope="tenant"/>
 
     </beans>
 

@@ -9,17 +9,8 @@
 
     <beans>
 
-        <bean class="eu.dirk.haase.bean.autowired.AutowiredAnnotationBeanPostProcessor"/>
-
-        <bean id="childApplicationContextRegistrator" class="eu.dirk.haase.context.ChildApplicationContextRegistrator" />
-
-        <bean id="mainServiceOne2" class="eu.dirk.haase.bean.MainServiceOneImpl" >
-            <qualifier value="one"/>
-            <property name="value" value="main-one-A"/>
-        </bean>
-
-        <bean id="mainServiceTwo" class="eu.dirk.haase.bean.MainServiceTwoImpl" >
-            <property name="value" value="main-two-A"/>
+        <bean id="drei" class="eu.dirk.haase.bean.MwsBeanImpl" >
+            <property name="name" value="drei"/>
         </bean>
 
 
