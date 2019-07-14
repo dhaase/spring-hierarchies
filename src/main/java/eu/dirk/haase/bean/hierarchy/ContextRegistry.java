@@ -188,6 +188,12 @@ public interface ContextRegistry {
     /**
      * Definiert alle Kategorien von Spring-Beans die sich in
      * einem {@link ApplicationContext} befinden k&ouml;nnen.
+     * <p>
+     * Es handelt sich bei diesen Kategorien von Spring-Beans
+     * selbstverst&auml;ndlich nicht um eine abschliessende
+     * Liste, sondern es werden nur diejenigen Kategorien
+     * von Spring-Beans aufgef&uuml;hrt die charakteristisch
+     * f&uuml;r den jeweiligen Kontext sind.
      */
     enum BeanType {
 
