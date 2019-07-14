@@ -19,7 +19,7 @@ public class MwsBeanImpl implements MwsBean, SmartLifecycle {
         return true;
     }
 
-    private boolean isRunning;
+    private volatile boolean isRunning;
 
     @Override
     public void start() {
@@ -29,7 +29,7 @@ public class MwsBeanImpl implements MwsBean, SmartLifecycle {
 
     @Override
     public void stop() {
-
+        stop(()->{});
     }
 
     @Override
@@ -39,7 +39,8 @@ public class MwsBeanImpl implements MwsBean, SmartLifecycle {
 
     @Override
     public void stop(Runnable runnable) {
-
+        isRunning = false;
+        System.out.println("stop: " + this);
     }
 
     @Override

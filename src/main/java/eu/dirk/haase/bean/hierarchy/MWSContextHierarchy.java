@@ -7,19 +7,29 @@ import java.util.function.Supplier;
 
 
 /**
- * Baut eine Definition von einer Hierarchie von {@link ApplicationContext}e
+ * Baut eine Definition einer Hierarchie von {@link ApplicationContext}en
  * in der MWS auf.
+ * <p>
+ * Es werden die {@code ApplicationContext}e selbst sowie die
+ * Parent-/Child-Beziehungen definiert ohne sie jedoch
+ * tats&auml;chlich zu initialisieren.
+ * <p>
+ * Die Definition erfolgt daher lazy.
  */
 final class MWSContextHierarchy implements ContextRegistry {
 
     static final ContextRegistry SINGLETON = new MWSContextHierarchy();
-
-    private final List<ContextLevel> contextLevelList;
     private final Set<ContextRegistry.BeanType> allBeanTypes;
+    private final List<ContextLevel> contextLevelList;
 
     MWSContextHierarchy() {
         this.contextLevelList = new ArrayList<>();
         this.allBeanTypes = buildHierarchy();
+    }
+
+    @Override
+    public Set<ContextRegistry.BeanType> allBeanTypes() {
+        return allBeanTypes;
     }
 
     private Set<ContextRegistry.BeanType> buildHierarchy() {
@@ -34,24 +44,51 @@ final class MWSContextHierarchy implements ContextRegistry {
         return four.getInheritBeanTypes();
     }
 
-
     @Override
-    public Set<ContextRegistry.BeanType> allBeanTypes() {
-        return allBeanTypes;
+    public void clearAllApplicationContexts() {
+        for (final ContextLevel current : this.contextLevelList) {
+            current.clear();
+        }
     }
 
-
     @Override
-    public Supplier<ApplicationContext> rootApplicationContext() {
-        return this.contextLevelList.get(0).getApplicationContextSupplier();
+    public void applyOnApplicationContextForBeansOf(final ApplicationContextLifeCycle task,
+                                                    final BeanType... beans) {
+        applyOnApplicationContextForBeansOf(task, new HashSet<>(Arrays.asList(beans)));
     }
 
-
     @Override
-    public Supplier<ApplicationContext> findApplicationContextForBeansOf(final BeanType... beans) {
-        return findApplicationContextForBeansOf(new HashSet<>(Arrays.asList(beans)));
+    public void applyOnApplicationContextForBeansOf(final ApplicationContextLifeCycle task,
+                                                    final Set<BeanType> beanTypeSet) {
+        boolean isMatch = false;
+        for (final ContextLevel current : this.contextLevelList) {
+            if (!isMatch) {
+                for (final BeanType beanType : beanTypeSet) {
+                    if (current.getInheritBeanTypes().contains(beanType)) {
+                        isMatch = true;
+                        break;
+                    }
+                }
+            }
+            // Hier kein 'else' da der aktuelle auch gleich
+            // den Task-Call bekommen soll.
+            if (isMatch) {
+                switch (task) {
+                    case clear:
+                        current.clear();
+                        break;
+                    case refresh:
+                        current.refresh();
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown task: " + task);
+                }
+            }
+        }
+        if (!isMatch) {
+            throw new IllegalArgumentException("No ApplicationContext found for BeanTypes: " + beanTypeSet);
+        }
     }
-
 
     @Override
     public Supplier<ApplicationContext> findApplicationContextForBeansOf(final Set<BeanType> beanTypeSet) {
@@ -61,6 +98,21 @@ final class MWSContextHierarchy implements ContextRegistry {
             }
         }
         throw new IllegalArgumentException("No ApplicationContext found for BeanTypes: " + beanTypeSet);
+    }
+
+    @Override
+    public Supplier<ApplicationContext> findApplicationContextForBeansOf(final BeanType... beans) {
+        return findApplicationContextForBeansOf(new HashSet<>(Arrays.asList(beans)));
+    }
+
+    @Override
+    public Supplier<ApplicationContext> rootApplicationContext() {
+        return this.contextLevelList.get(0).getApplicationContextSupplier();
+    }
+
+    @Override
+    public long getStartupDate() {
+        return this.contextLevelList.get(0).getStartupDate();
     }
 
 

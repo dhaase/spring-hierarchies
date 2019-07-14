@@ -1,6 +1,7 @@
 package eu.dirk.haase.bean.hierarchy;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,12 +13,12 @@ import java.util.function.Supplier;
  */
 final class ContextLevel {
 
-    private final Supplier<ApplicationContext> applicationContextSupplier;
+    private final MemoizingSupplier<ApplicationContext> applicationContextSupplier;
     private final Set<ContextRegistry.BeanType> inheritBeanTypes;
 
     ContextLevel(final Set<ContextRegistry.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
-        this.applicationContextSupplier = applicationContextSupplier;
+        this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         this.inheritBeanTypes = Collections.unmodifiableSet(thisBeanTypes);
     }
 
@@ -26,8 +27,12 @@ final class ContextLevel {
                  final Supplier<ApplicationContext> applicationContextSupplier) {
         final HashSet<ContextRegistry.BeanType> beanTypeSet = new HashSet<>(thisBeanTypes);
         beanTypeSet.addAll(parentBeanTypes);
-        this.applicationContextSupplier = applicationContextSupplier;
+        this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         this.inheritBeanTypes = Collections.unmodifiableSet(beanTypeSet);
+    }
+
+    void clear() {
+        applicationContextSupplier.invalidate();
     }
 
     Supplier<ApplicationContext> getApplicationContextSupplier() {
@@ -36,6 +41,19 @@ final class ContextLevel {
 
     Set<ContextRegistry.BeanType> getInheritBeanTypes() {
         return inheritBeanTypes;
+    }
+
+    void refresh() {
+        if (applicationContextSupplier.isInitialized()) {
+            ((ConfigurableApplicationContext) applicationContextSupplier.get()).refresh();
+        }
+    }
+
+    long getStartupDate() {
+        if (applicationContextSupplier.isInitialized()) {
+            return applicationContextSupplier.get().getStartupDate();
+        }
+        return 0;
     }
 
 }
