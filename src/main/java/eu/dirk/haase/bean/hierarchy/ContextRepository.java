@@ -19,29 +19,29 @@ import java.util.function.Supplier;
  * <p>
  * Die {@code ApplicationContext}e werden zwischengespeichert und daher
  * in der Regel nur einmalig initialisiert.
- * Mit der Methode {@link ContextRegistry#clearAllApplicationContexts()}
+ * Mit der Methode {@link ContextRepository#clearAllApplicationContexts()}
  * k&ouml;nnen die {@code ApplicationContext}e erneut initialisiert
  * werden.
  */
-public interface ContextRegistry {
+public interface ContextRepository {
 
     /**
-     * Globale Instanz der {@link ContextRegistry}.
+     * Globale Instanz der {@link ContextRepository}.
      *
-     * @return die Instanz der {@link ContextRegistry}.
+     * @return die Instanz der {@link ContextRepository}.
      */
-    static ContextRegistry global() {
+    static ContextRepository global() {
         return MWSContextHierarchy.SINGLETON;
     }
 
     /**
      * Liefert ein {@link Set} von allen {@link BeanType}s die
      * von einem {@link ApplicationContext} in dieser
-     * {@link ContextRegistry} erreichbar sind.
+     * {@link ContextRepository} erreichbar sind.
      *
      * @return ein {@link Set} von allen {@link BeanType}s.
      */
-    Set<ContextRegistry.BeanType> allBeanTypes();
+    Set<ContextRepository.BeanType> allBeanTypes();
 
     /**
      * Wendet auf den gesuchten {@link ApplicationContext} und seinen abh&auml;ngigen

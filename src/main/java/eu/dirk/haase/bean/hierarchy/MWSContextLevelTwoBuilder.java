@@ -8,8 +8,8 @@ import java.util.Set;
 
 final class MWSContextLevelTwoBuilder {
 
-    private final static Set<ContextRegistry.BeanType> thisBeanTypes = EnumSet.of(ContextRegistry.BeanType.Two);
-    private final static Set<ContextRegistry.BeanType> requiredBeanTypes = EnumSet.of(ContextRegistry.BeanType.One);
+    private final static Set<ContextRepository.BeanType> thisBeanTypes = EnumSet.of(ContextRepository.BeanType.Two);
+    private final static Set<ContextRepository.BeanType> requiredBeanTypes = EnumSet.of(ContextRepository.BeanType.One);
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {

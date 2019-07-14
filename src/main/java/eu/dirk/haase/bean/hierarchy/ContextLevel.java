@@ -14,19 +14,19 @@ import java.util.function.Supplier;
 final class ContextLevel {
 
     private final MemoizingSupplier<ApplicationContext> applicationContextSupplier;
-    private final Set<ContextRegistry.BeanType> inheritBeanTypes;
+    private final Set<ContextRepository.BeanType> inheritBeanTypes;
 
-    ContextLevel(final Set<ContextRegistry.BeanType> thisBeanTypes,
+    ContextLevel(final Set<ContextRepository.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
         this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         this.inheritBeanTypes = Collections.unmodifiableSet(thisBeanTypes);
     }
 
-    ContextLevel(final Set<ContextRegistry.BeanType> parentBeanTypes,
-                 final Set<ContextRegistry.BeanType> thisBeanTypes,
+    ContextLevel(final Set<ContextRepository.BeanType> parentBeanTypes,
+                 final Set<ContextRepository.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
         this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
-        final HashSet<ContextRegistry.BeanType> beanTypeSet = new HashSet<>(thisBeanTypes);
+        final HashSet<ContextRepository.BeanType> beanTypeSet = new HashSet<>(thisBeanTypes);
         beanTypeSet.addAll(parentBeanTypes);
         this.inheritBeanTypes = Collections.unmodifiableSet(beanTypeSet);
     }
@@ -39,7 +39,7 @@ final class ContextLevel {
         return applicationContextSupplier;
     }
 
-    Set<ContextRegistry.BeanType> getInheritBeanTypes() {
+    Set<ContextRepository.BeanType> getInheritBeanTypes() {
         return inheritBeanTypes;
     }
 

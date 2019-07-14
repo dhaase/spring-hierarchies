@@ -16,10 +16,10 @@ import java.util.function.Supplier;
  * <p>
  * Die Definition erfolgt daher lazy.
  */
-final class MWSContextHierarchy implements ContextRegistry {
+final class MWSContextHierarchy implements ContextRepository {
 
-    static final ContextRegistry SINGLETON = new MWSContextHierarchy();
-    private final Set<ContextRegistry.BeanType> allBeanTypes;
+    static final ContextRepository SINGLETON = new MWSContextHierarchy();
+    private final Set<ContextRepository.BeanType> allBeanTypes;
     private final List<ContextLevel> contextLevelList;
 
     MWSContextHierarchy() {
@@ -28,11 +28,11 @@ final class MWSContextHierarchy implements ContextRegistry {
     }
 
     @Override
-    public Set<ContextRegistry.BeanType> allBeanTypes() {
+    public Set<ContextRepository.BeanType> allBeanTypes() {
         return allBeanTypes;
     }
 
-    private Set<ContextRegistry.BeanType> buildHierarchy() {
+    private Set<ContextRepository.BeanType> buildHierarchy() {
         final ContextLevel one = MWSContextLevelOneBuilder.create();
         final ContextLevel two = MWSContextLevelTwoBuilder.create(one);
         final ContextLevel three = MWSContextLevelThreeBuilder.create(two);

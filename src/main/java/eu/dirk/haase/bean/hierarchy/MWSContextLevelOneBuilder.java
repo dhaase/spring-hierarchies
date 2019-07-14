@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 final class MWSContextLevelOneBuilder {
 
-    private final static Set<ContextRegistry.BeanType> thisBeanTypes = EnumSet.of(ContextRegistry.BeanType.One);
+    private final static Set<ContextRepository.BeanType> thisBeanTypes = EnumSet.of(ContextRepository.BeanType.One);
 
 
     static ContextLevel create() {

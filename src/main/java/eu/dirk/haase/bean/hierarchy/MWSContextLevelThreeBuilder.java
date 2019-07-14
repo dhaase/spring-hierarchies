@@ -5,13 +5,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 final class MWSContextLevelThreeBuilder {
 
-    private final static Set<ContextRegistry.BeanType> thisBeanTypes = EnumSet.of(ContextRegistry.BeanType.Three);
-    private final static Set<ContextRegistry.BeanType> requiredBeanTypes = EnumSet.of(ContextRegistry.BeanType.One,
-            ContextRegistry.BeanType.Two);
+    private final static Set<ContextRepository.BeanType> thisBeanTypes = EnumSet.of(ContextRepository.BeanType.Three);
+    private final static Set<ContextRepository.BeanType> requiredBeanTypes = EnumSet.of(ContextRepository.BeanType.One,
+            ContextRepository.BeanType.Two);
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {

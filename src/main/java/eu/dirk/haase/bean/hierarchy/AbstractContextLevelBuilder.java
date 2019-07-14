@@ -9,8 +9,8 @@ final class AbstractContextLevelBuilder {
 
 
     static ContextLevel create(final ContextLevel parentContextLevel,
-                               final Set<ContextRegistry.BeanType> requiredBeanTypes,
-                               final Set<ContextRegistry.BeanType> thisBeanTypes,
+                               final Set<ContextRepository.BeanType> requiredBeanTypes,
+                               final Set<ContextRepository.BeanType> thisBeanTypes,
                                final Supplier<ApplicationContext> applicationContextSupplier) {
         final Supplier<ApplicationContext> supplier = applicationContextSupplier;
         if (!parentContextLevel.getInheritBeanTypes().containsAll(requiredBeanTypes)) {
