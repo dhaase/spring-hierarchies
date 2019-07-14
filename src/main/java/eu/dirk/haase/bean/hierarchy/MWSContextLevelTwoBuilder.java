@@ -13,7 +13,7 @@ final class MWSContextLevelTwoBuilder {
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {
-        return AbstractContextLevelBuilder.create(parentContextLevel,
+        return ContextLevel.create(parentContextLevel,
                 requiredBeanTypes,
                 thisBeanTypes,
                 () -> createApplicationContext(parentContextLevel));

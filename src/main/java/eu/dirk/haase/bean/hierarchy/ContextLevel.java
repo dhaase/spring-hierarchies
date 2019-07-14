@@ -31,6 +31,18 @@ final class ContextLevel {
         this.inheritBeanTypes = Collections.unmodifiableSet(beanTypeSet);
     }
 
+    static ContextLevel create(final ContextLevel parentContextLevel,
+                               final Set<ContextRepository.BeanType> requiredBeanTypes,
+                               final Set<ContextRepository.BeanType> thisBeanTypes,
+                               final Supplier<ApplicationContext> applicationContextSupplier) {
+        final Supplier<ApplicationContext> supplier = applicationContextSupplier;
+        if (!parentContextLevel.getInheritBeanTypes().containsAll(requiredBeanTypes)) {
+            throw new IllegalArgumentException("ApplicationContext-Parent has no access to required BeanTypes: " +
+                    requiredBeanTypes);
+        }
+        return new ContextLevel(parentContextLevel.getInheritBeanTypes(), thisBeanTypes, supplier);
+    }
+
     void clear() {
         applicationContextSupplier.invalidate();
     }

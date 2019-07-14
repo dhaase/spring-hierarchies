@@ -14,7 +14,7 @@ final class MWSContextLevelThreeBuilder {
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {
-        return AbstractContextLevelBuilder.create(parentContextLevel,
+        return ContextLevel.create(parentContextLevel,
                 requiredBeanTypes,
                 thisBeanTypes,
                 () -> createApplicationContext(parentContextLevel));

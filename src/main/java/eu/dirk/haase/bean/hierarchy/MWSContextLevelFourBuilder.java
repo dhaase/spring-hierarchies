@@ -14,7 +14,7 @@ final class MWSContextLevelFourBuilder {
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {
-        return AbstractContextLevelBuilder.create(parentContextLevel,
+        return ContextLevel.create(parentContextLevel,
                 requiredBeanTypes,
                 thisBeanTypes,
                 () -> createApplicationContext(parentContextLevel));
