@@ -25,9 +25,9 @@ final class ContextLevel {
     ContextLevel(final Set<ContextRegistry.BeanType> parentBeanTypes,
                  final Set<ContextRegistry.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
+        this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         final HashSet<ContextRegistry.BeanType> beanTypeSet = new HashSet<>(thisBeanTypes);
         beanTypeSet.addAll(parentBeanTypes);
-        this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         this.inheritBeanTypes = Collections.unmodifiableSet(beanTypeSet);
     }
 
@@ -43,17 +43,17 @@ final class ContextLevel {
         return inheritBeanTypes;
     }
 
-    void refresh() {
-        if (applicationContextSupplier.isInitialized()) {
-            ((ConfigurableApplicationContext) applicationContextSupplier.get()).refresh();
-        }
-    }
-
     long getStartupDate() {
         if (applicationContextSupplier.isInitialized()) {
             return applicationContextSupplier.get().getStartupDate();
         }
         return 0;
+    }
+
+    void refresh() {
+        if (applicationContextSupplier.isInitialized()) {
+            ((ConfigurableApplicationContext) applicationContextSupplier.get()).refresh();
+        }
     }
 
 }

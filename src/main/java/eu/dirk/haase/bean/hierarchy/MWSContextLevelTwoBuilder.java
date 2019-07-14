@@ -5,20 +5,22 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 final class MWSContextLevelTwoBuilder {
 
-    private final static Set<ContextRegistry.BeanType> two = EnumSet.of(ContextRegistry.BeanType.Two);
+    private final static Set<ContextRegistry.BeanType> thisBeanTypes = EnumSet.of(ContextRegistry.BeanType.Two);
+    private final static Set<ContextRegistry.BeanType> requiredBeanTypes = EnumSet.of(ContextRegistry.BeanType.One);
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {
-        final Supplier<ApplicationContext> supplier = () -> createApplicationContextTwo(parentContextLevel);
-        return new ContextLevel(parentContextLevel.getInheritBeanTypes(), two, supplier);
+        return AbstractContextLevelBuilder.create(parentContextLevel,
+                requiredBeanTypes,
+                thisBeanTypes,
+                () -> createApplicationContext(parentContextLevel));
     }
 
 
-    private static ApplicationContext createApplicationContextTwo(final ContextLevel parentContextLevel) {
+    private static ApplicationContext createApplicationContext(final ContextLevel parentContextLevel) {
         final ApplicationContext parent = parentContextLevel.getApplicationContextSupplier().get();
         final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
         final String[] resources3 = {"/eu/dirk/haase/application-context-2.xml"};

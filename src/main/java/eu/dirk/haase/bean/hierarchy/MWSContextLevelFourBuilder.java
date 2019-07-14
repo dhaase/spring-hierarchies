@@ -9,16 +9,20 @@ import java.util.function.Supplier;
 
 final class MWSContextLevelFourBuilder {
 
-    private final static Set<ContextRegistry.BeanType> four = EnumSet.of(ContextRegistry.BeanType.Four);
+    private final static Set<ContextRegistry.BeanType> thisBeanTypes = EnumSet.of(ContextRegistry.BeanType.Four);
+    private final static Set<ContextRegistry.BeanType> requiredBeanTypes = EnumSet.of(ContextRegistry.BeanType.One,
+            ContextRegistry.BeanType.Two, ContextRegistry.BeanType.Three);
 
 
     static ContextLevel create(final ContextLevel parentContextLevel) {
-        final Supplier<ApplicationContext> supplier = () -> createApplicationContextTwo(parentContextLevel);
-        return new ContextLevel(parentContextLevel.getInheritBeanTypes(), four, supplier);
+        return AbstractContextLevelBuilder.create(parentContextLevel,
+                requiredBeanTypes,
+                thisBeanTypes,
+                () -> createApplicationContext(parentContextLevel));
     }
 
 
-    private static ApplicationContext createApplicationContextTwo(final ContextLevel parentContextLevel) {
+    private static ApplicationContext createApplicationContext(final ContextLevel parentContextLevel) {
         final ApplicationContext parent = parentContextLevel.getApplicationContextSupplier().get();
         final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
         final String[] resources3 = {"/eu/dirk/haase/application-context-4.xml"};

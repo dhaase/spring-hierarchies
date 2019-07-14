@@ -9,16 +9,16 @@ import java.util.function.Supplier;
 
 final class MWSContextLevelOneBuilder {
 
-    private final static Set<ContextRegistry.BeanType> one = EnumSet.of(ContextRegistry.BeanType.One);
+    private final static Set<ContextRegistry.BeanType> thisBeanTypes = EnumSet.of(ContextRegistry.BeanType.One);
 
 
     static ContextLevel create() {
-        final Supplier<ApplicationContext> supplier = () -> createApplicationContextOne();
-        return new ContextLevel(one, supplier);
+        final Supplier<ApplicationContext> supplier = () -> createApplicationContext();
+        return new ContextLevel(thisBeanTypes, supplier);
     }
 
 
-    private static ApplicationContext createApplicationContextOne() {
+    private static ApplicationContext createApplicationContext() {
         final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext();
         final String[] resources3 = {"/eu/dirk/haase/application-context-1.xml"};
         applicationContext.setConfigLocations(resources3);
