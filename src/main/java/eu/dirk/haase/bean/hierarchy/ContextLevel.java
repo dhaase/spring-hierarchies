@@ -15,19 +15,22 @@ final class ContextLevel {
 
     private final MemoizingSupplier<ApplicationContext> applicationContextSupplier;
     private final Set<ContextRepository.BeanType> inheritBeanTypes;
+    private final ContextLevel parentContextLevel;
 
     ContextLevel(final Set<ContextRepository.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
+        this.parentContextLevel = null;
         this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         this.inheritBeanTypes = Collections.unmodifiableSet(thisBeanTypes);
     }
 
-    ContextLevel(final Set<ContextRepository.BeanType> parentBeanTypes,
+    ContextLevel(final ContextLevel parentContextLevel,
                  final Set<ContextRepository.BeanType> thisBeanTypes,
                  final Supplier<ApplicationContext> applicationContextSupplier) {
+        this.parentContextLevel = parentContextLevel;
         this.applicationContextSupplier = new MemoizingSupplier(applicationContextSupplier);
         final HashSet<ContextRepository.BeanType> beanTypeSet = new HashSet<>(thisBeanTypes);
-        beanTypeSet.addAll(parentBeanTypes);
+        beanTypeSet.addAll(parentContextLevel.getInheritBeanTypes());
         this.inheritBeanTypes = Collections.unmodifiableSet(beanTypeSet);
     }
 
@@ -40,11 +43,18 @@ final class ContextLevel {
             throw new IllegalArgumentException("ApplicationContext-Parent has no access to required BeanTypes: " +
                     requiredBeanTypes);
         }
-        return new ContextLevel(parentContextLevel.getInheritBeanTypes(), thisBeanTypes, supplier);
+        return new ContextLevel(parentContextLevel, thisBeanTypes, supplier);
     }
 
     void clear() {
         applicationContextSupplier.invalidate();
+    }
+
+    void clearCascading() {
+        if (this.parentContextLevel != null) {
+            this.parentContextLevel.clearCascading();
+        }
+        clear();
     }
 
     Supplier<ApplicationContext> getApplicationContextSupplier() {
@@ -66,6 +76,13 @@ final class ContextLevel {
         if (applicationContextSupplier.isInitialized()) {
             ((ConfigurableApplicationContext) applicationContextSupplier.get()).refresh();
         }
+    }
+
+    void refreshCascading() {
+        if (this.parentContextLevel != null) {
+            this.parentContextLevel.refreshCascading();
+        }
+        refresh();
     }
 
 }

@@ -131,13 +131,6 @@ public interface ContextRepository {
     Supplier<ApplicationContext> findApplicationContextForBeansOf(final Set<BeanType> beanTypeSet);
 
     /**
-     * Liefert den Wurzel-{@link ApplicationContext}.
-     *
-     * @return den Wurzel-{@code ApplicationContext}.
-     */
-    Supplier<ApplicationContext> rootApplicationContext();
-
-    /**
      * Der Zeitstempel (ms), als dieser Wurzel-Kontext zum ersten Mal
      * geladen wurde oder 0 wenn er noch nicht geladen wurde.
      *
@@ -145,6 +138,13 @@ public interface ContextRepository {
      * ersten Mal geladen wurde
      */
     long getStartupDate();
+
+    /**
+     * Liefert den Wurzel-{@link ApplicationContext}.
+     *
+     * @return den Wurzel-{@code ApplicationContext}.
+     */
+    Supplier<ApplicationContext> rootApplicationContext();
 
     /**
      * Definiert die LifeCycle-Methoden die an einem
@@ -165,6 +165,7 @@ public interface ContextRepository {
          * @see ContextLevel#clear()
          */
         clear,
+        clearCascading,
         /**
          * Token damit der zwischengespeicherte {@code ApplicationContext}
          * aufgefrischt werden kann.
@@ -180,7 +181,8 @@ public interface ContextRepository {
          *
          * @see ConfigurableApplicationContext#refresh()
          */
-        refresh;
+        refresh,
+        refreshCascading;
 
     }
 

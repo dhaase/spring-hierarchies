@@ -3,6 +3,7 @@ package eu.dirk.haase.bean.hierarchy;
 import org.springframework.context.ApplicationContext;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -23,32 +24,29 @@ final class MWSContextHierarchy implements ContextRepository {
     private final List<ContextLevel> contextLevelList;
 
     MWSContextHierarchy() {
+        this(MWSContextHierarchy::buildHierarchy);
+    }
+
+    MWSContextHierarchy(final Function<List<ContextLevel>, Set<BeanType>> hierarchyBuilder) {
         this.contextLevelList = new ArrayList<>();
-        this.allBeanTypes = buildHierarchy();
+        this.allBeanTypes = hierarchyBuilder.apply(this.contextLevelList);
+    }
+
+    private static Set<ContextRepository.BeanType> buildHierarchy(final List<ContextLevel> contextLevelList) {
+        final ContextLevel one = MWSContextLevelOneBuilder.create();
+        final ContextLevel two = MWSContextLevelTwoBuilder.create(one);
+        final ContextLevel three = MWSContextLevelThreeBuilder.create(two);
+        final ContextLevel four = MWSContextLevelFourBuilder.create(three);
+        contextLevelList.add(one);
+        contextLevelList.add(two);
+        contextLevelList.add(three);
+        contextLevelList.add(four);
+        return four.getInheritBeanTypes();
     }
 
     @Override
     public Set<ContextRepository.BeanType> allBeanTypes() {
         return allBeanTypes;
-    }
-
-    private Set<ContextRepository.BeanType> buildHierarchy() {
-        final ContextLevel one = MWSContextLevelOneBuilder.create();
-        final ContextLevel two = MWSContextLevelTwoBuilder.create(one);
-        final ContextLevel three = MWSContextLevelThreeBuilder.create(two);
-        final ContextLevel four = MWSContextLevelFourBuilder.create(three);
-        this.contextLevelList.add(one);
-        this.contextLevelList.add(two);
-        this.contextLevelList.add(three);
-        this.contextLevelList.add(four);
-        return four.getInheritBeanTypes();
-    }
-
-    @Override
-    public void clearAllApplicationContexts() {
-        for (final ContextLevel current : this.contextLevelList) {
-            current.clear();
-        }
     }
 
     @Override
@@ -60,33 +58,34 @@ final class MWSContextHierarchy implements ContextRepository {
     @Override
     public void applyOnApplicationContextForBeansOf(final ApplicationContextLifeCycle task,
                                                     final Set<BeanType> beanTypeSet) {
-        boolean isMatch = false;
         for (final ContextLevel current : this.contextLevelList) {
-            if (!isMatch) {
-                for (final BeanType beanType : beanTypeSet) {
-                    if (current.getInheritBeanTypes().contains(beanType)) {
-                        isMatch = true;
-                        break;
-                    }
-                }
-            }
-            // Hier kein 'else' da der aktuelle auch gleich
-            // den Task-Call bekommen soll.
-            if (isMatch) {
+            if (current.getInheritBeanTypes().containsAll(beanTypeSet)) {
                 switch (task) {
                     case clear:
                         current.clear();
                         break;
+                    case clearCascading:
+                        current.clearCascading();
+                        break;
                     case refresh:
                         current.refresh();
+                        break;
+                    case refreshCascading:
+                        current.refreshCascading();
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown task: " + task);
                 }
+                return;
             }
         }
-        if (!isMatch) {
-            throw new IllegalArgumentException("No ApplicationContext found for BeanTypes: " + beanTypeSet);
+        throw new IllegalArgumentException("No ApplicationContext found for BeanTypes: " + beanTypeSet);
+    }
+
+    @Override
+    public void clearAllApplicationContexts() {
+        for (final ContextLevel current : this.contextLevelList) {
+            current.clear();
         }
     }
 
@@ -106,13 +105,13 @@ final class MWSContextHierarchy implements ContextRepository {
     }
 
     @Override
-    public Supplier<ApplicationContext> rootApplicationContext() {
-        return this.contextLevelList.get(0).getApplicationContextSupplier();
+    public long getStartupDate() {
+        return this.contextLevelList.get(0).getStartupDate();
     }
 
     @Override
-    public long getStartupDate() {
-        return this.contextLevelList.get(0).getStartupDate();
+    public Supplier<ApplicationContext> rootApplicationContext() {
+        return this.contextLevelList.get(0).getApplicationContextSupplier();
     }
 
 
