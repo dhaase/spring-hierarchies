@@ -7,6 +7,11 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * F&uuml;hrt gespeicherte Transaktionssynchronisations-Callbacks aus.
+ *
+ * @see TransactionSynchronizationRegistry
+ */
 final class TransactionSynchronizationHandler extends AbstractTransactionSynchronization {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionSynchronizationHandler.class);

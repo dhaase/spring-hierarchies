@@ -1,6 +1,7 @@
 package eu.dirk.haase.transaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.transaction.TransactionDefinition;
@@ -52,6 +53,9 @@ public final class GlobalTransactionManager extends JtaTransactionManager implem
      * In einem solchen Kontext wird es eine aktive Transaktion geben: Die Implementierung
      * dieser Methode muss dies erkennen und eine entsprechende verschachtelte Transaktion
      * starten.
+     * <p>
+     * Diese Methode l&ouml;st das {@link ApplicationEvent}-Event
+     * {@link AfterTransactionBeginEvent} aus.
      *
      * @param transaction Transaktionsobjekt, das von {@link #doGetTransaction()}
      *                    zur&uuml;ckgegeben wird.
@@ -59,6 +63,7 @@ public final class GlobalTransactionManager extends JtaTransactionManager implem
      *                    die Isolationsstufe, das Nur-Lese-Flag, das Zeitlimit und den
      *                    Transaktionsnamen beschreibt.
      * @see AbstractPlatformTransactionManager#doBegin(Object, TransactionDefinition)
+     * @see AfterTransactionBeginEvent
      */
     @Override
     protected void doBegin(final Object transaction, final TransactionDefinition definition) {
