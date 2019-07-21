@@ -7,24 +7,27 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import java.util.List;
 import java.util.Map;
 
- class TransactionSynchronizationHandler extends AbstractTransactionSynchronization {
+final class TransactionSynchronizationHandler extends AbstractTransactionSynchronization {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionSynchronizationHandler.class);
 
-    private static void executeRunnables(final Event event, final String msg) {
-        final Map<Event, List<Runnable>> threadRunnableMap = threadLocalRunnables.get();
-        final List<Runnable> threadRunnables = (threadRunnableMap != null ? threadRunnableMap.get(event) : null);
-        if (threadRunnables != null) {
-            logger.info(msg, threadRunnables.size());
-            threadRunnables.forEach((r) -> execute(event, r));
-        }
+    private TransactionSynchronizationHandler() {
     }
 
     private static void execute(final Event event, final Runnable command) {
         try {
             command.run();
         } catch (RuntimeException ex) {
-            logger.error(event + ": Failed to execute runnable " + command + ": " + ex, ex);
+            logger.error(event + "-Event: Failed to execute runnable " + command + ": " + ex, ex);
+        }
+    }
+
+    private static void executeRunnables(final Event event) {
+        final Map<Event, List<Runnable>> threadRunnableMap = threadLocalRunnables.get();
+        final List<Runnable> threadRunnables = (threadRunnableMap != null ? threadRunnableMap.get(event) : null);
+        if (threadRunnables != null) {
+            logger.info("Executing {} runnables to run on {}-Event", threadRunnables.size(), event);
+            threadRunnables.forEach((r) -> execute(event, r));
         }
     }
 
@@ -33,46 +36,49 @@ import java.util.Map;
     }
 
     static class Handler implements TransactionSynchronization {
+        Handler() {
+        }
 
         @Override
         public void afterCommit() {
-            executeRunnables(Event.afterCommit, "Transaction successfully committed, executing {} runnables");
+            executeRunnables(Event.afterCommit);
         }
 
         @Override
         public void afterCompletion(int status) {
             if (status == STATUS_COMMITTED) {
-                logger.info("Transaction completed with status COMMITTED");
+                logger.info("Transaction completed with status: COMMITTED");
             } else {
-                logger.warn("Transaction completed with status ROLLED_BACK");
+                logger.warn("Transaction completed with status: ROLLED_BACK");
             }
-            executeRunnables(Event.afterCompletion, "Transaction successfully committed, executing {} runnables");
-            threadLocalRunnables.remove();
+            executeRunnables(Event.afterCompletion);
+            TransactionSynchronizationRegistry.getSingleton().clearCurrent();
         }
 
         @Override
-        public void beforeCommit(boolean b) {
-            executeRunnables(Event.beforeCommit, "Transaction before committing, executing {} runnables");
+        public void beforeCommit(boolean isReadOnly) {
+            logger.info("{} Transaction is just before commit", (isReadOnly ? "Read only" : ""));
+            executeRunnables(Event.beforeCommit);
         }
 
         @Override
         public void beforeCompletion() {
-            executeRunnables(Event.beforeCompletion, "Transaction is before completion, executing {} runnables");
+            executeRunnables(Event.beforeCompletion);
         }
 
         @Override
         public void flush() {
-            executeRunnables(Event.flush, "Transaction is flushed, executing {} runnables");
+            executeRunnables(Event.flush);
         }
 
         @Override
         public void resume() {
-            executeRunnables(Event.resume, "Transaction is resumed, executing {} runnables");
+            executeRunnables(Event.resume);
         }
 
         @Override
         public void suspend() {
-            executeRunnables(Event.suspend, "Transaction is suspended, executing {} runnables");
+            executeRunnables(Event.suspend);
         }
 
     }
