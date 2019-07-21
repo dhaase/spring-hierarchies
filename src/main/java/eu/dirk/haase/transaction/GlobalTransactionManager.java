@@ -53,7 +53,8 @@ public final class GlobalTransactionManager extends JtaTransactionManager implem
      * dieser Methode muss dies erkennen und eine entsprechende verschachtelte Transaktion
      * starten.
      *
-     * @param transaction Transaktionsobjekt, das von {@link #doGetTransaction()} zurückgegeben wird.
+     * @param transaction Transaktionsobjekt, das von {@link #doGetTransaction()}
+     *                    zur&uuml;ckgegeben wird.
      * @param definition  Eine TransactionDefinition-Instanz, die das Weitergabeverhalten,
      *                    die Isolationsstufe, das Nur-Lese-Flag, das Zeitlimit und den
      *                    Transaktionsnamen beschreibt.
