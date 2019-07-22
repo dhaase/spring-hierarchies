@@ -4,41 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
+import javax.sql.DataSource;
 
 /**
- * Ein Transaktion-Manager f&uuml;r verteilte Transaktionen der
+ * Ein Transaktion-Manager f&uuml;r lokale Datenbank-Transaktionen der
  * den Start einer Transaktion mit einem {@link AfterTransactionBeginEvent}
  * ver&ouml;ffentlicht.
  */
-public final class GlobalTransactionManager extends JtaTransactionManager implements ApplicationEventPublisherAware {
-
+public final class LocalTransactionManager extends DataSourceTransactionManager implements ApplicationEventPublisherAware {
     private final AfterTransactionBeginEvent afterTransactionBeginEvent;
     private boolean isAfterTransactionBeginEventEnabled;
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    public GlobalTransactionManager() {
+    public LocalTransactionManager() {
         this.afterTransactionBeginEvent = new AfterTransactionBeginEvent(this);
     }
 
-    public GlobalTransactionManager(UserTransaction userTransaction) {
-        super(userTransaction);
-        this.afterTransactionBeginEvent = new AfterTransactionBeginEvent(this);
-    }
-
-    public GlobalTransactionManager(UserTransaction userTransaction, TransactionManager transactionManager) {
-        super(userTransaction, transactionManager);
-        this.afterTransactionBeginEvent = new AfterTransactionBeginEvent(this);
-    }
-
-    public GlobalTransactionManager(TransactionManager transactionManager) {
-        super(transactionManager);
+    public LocalTransactionManager(DataSource dataSource) {
+        super(dataSource);
         this.afterTransactionBeginEvent = new AfterTransactionBeginEvent(this);
     }
 
@@ -78,12 +66,9 @@ public final class GlobalTransactionManager extends JtaTransactionManager implem
         }
     }
 
-    public void setAfterTransactionBeginEventEnabled(boolean afterTransactionBeginEventEnabled) {
-        isAfterTransactionBeginEventEnabled = afterTransactionBeginEventEnabled;
-    }
-
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
         this.publisher = publisher;
     }
+
 }
