@@ -33,7 +33,6 @@ public class MwsBeanImpl implements MwsBean, SmartLifecycle, ApplicationEventPub
     @Override
     public void start() {
         isRunning = true;
-        System.out.println("start: " + this);
     }
 
     @Override
@@ -43,7 +42,7 @@ public class MwsBeanImpl implements MwsBean, SmartLifecycle, ApplicationEventPub
 
     @Override
     public boolean isRunning() {
-        applicationEventPublisher.publishEvent(new MwsBeanApplicationEvent(this));
+        //applicationEventPublisher.publishEvent(new MwsBeanApplicationEvent(this));
         return isRunning;
     }
 

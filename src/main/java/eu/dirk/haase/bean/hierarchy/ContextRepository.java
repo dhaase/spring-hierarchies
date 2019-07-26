@@ -197,9 +197,13 @@ public interface ContextRepository {
      * von Spring-Beans aufgef&uuml;hrt die charakteristisch
      * f&uuml;r den jeweiligen Kontext sind.
      */
-    enum BeanType {
+    enum BeanType implements BeanCategory {
 
         One, Two, Three, Four;
+
+    }
+
+    interface BeanCategory {
 
     }
 }
