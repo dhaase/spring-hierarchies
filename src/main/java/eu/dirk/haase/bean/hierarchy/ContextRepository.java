@@ -46,9 +46,9 @@ public interface ContextRepository extends Function<String[], ApplicationContext
     Set<ContextRepository.BeanType> allBeanTypes();
 
     @Override
-    default ApplicationContext apply(String[] beanTypes) {
+    default ApplicationContext apply(final String[] beanTypes) {
         final Set<ContextRepository.BeanType> beanTypeSet = new HashSet<>();
-        for (String beanType : beanTypes) {
+        for (final String beanType : beanTypes) {
             beanTypeSet.add(ContextRepository.BeanType.valueOf(beanType));
         }
         return findApplicationContextForBeansOf(beanTypeSet).get();

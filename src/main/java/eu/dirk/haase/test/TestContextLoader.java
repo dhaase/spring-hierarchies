@@ -13,7 +13,7 @@ import java.lang.reflect.AnnotatedElement;
 
 public abstract class TestContextLoader implements SmartContextLoader {
 
-    private SmartContextLoader defaultSmartContextLoader = new NullSmartContextLoader();
+    private SmartContextLoader smartContextLoader = new NullSmartContextLoader();
 
     public TestContextLoader() {
         super();
@@ -26,28 +26,32 @@ public abstract class TestContextLoader implements SmartContextLoader {
                     "can define either 'locations' or 'classes', but not both.");
         }
         if (ctxConfigAttributes.hasLocations()) {
-            defaultSmartContextLoader = new GenericXmlContextLoader();
+            this.smartContextLoader = new GenericXmlContextLoader();
         } else if (ctxConfigAttributes.hasClasses()) {
-            defaultSmartContextLoader = new AnnotationConfigContextLoader();
+            this.smartContextLoader = new AnnotationConfigContextLoader();
         } else {
-            defaultSmartContextLoader = new NullSmartContextLoader();
+            this.smartContextLoader = new NullSmartContextLoader();
         }
-        defaultSmartContextLoader.processContextConfiguration(ctxConfigAttributes);
+        this.smartContextLoader.processContextConfiguration(ctxConfigAttributes);
     }
 
     @Override
     public final ApplicationContext loadContext(final MergedContextConfiguration mergedCtxConfig) throws Exception {
-        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedCtxConfig.getTestClass();
-        final TestContextConfiguration testContextConfiguration = AnnotatedElementUtils.getMergedAnnotation(testClass, TestContextConfiguration.class);
-        final String[] beanTypes = testContextConfiguration.beanCategories();
+        final String[] beanTypes = getBeanCategories(mergedCtxConfig);
         final ApplicationContext mainContext = findApplicationContextForBeansOf(beanTypes);
-        final ApplicationContext testContext = defaultSmartContextLoader.loadContext(mergedCtxConfig);
+        final ApplicationContext testContext = this.smartContextLoader.loadContext(mergedCtxConfig);
         if (testContext == null) {
             return mainContext;
         } else {
             ((ConfigurableApplicationContext) testContext).setParent(mainContext);
             return testContext;
         }
+    }
+
+    private String[] getBeanCategories(final MergedContextConfiguration mergedCtxConfig) {
+        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedCtxConfig.getTestClass();
+        final TestContextConfiguration testContextConfiguration = AnnotatedElementUtils.getMergedAnnotation(testClass, TestContextConfiguration.class);
+        return testContextConfiguration.beanCategories();
     }
 
     abstract protected ApplicationContext findApplicationContextForBeansOf(final String[] beanTypes);

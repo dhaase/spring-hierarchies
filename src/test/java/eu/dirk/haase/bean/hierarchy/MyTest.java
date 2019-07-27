@@ -12,9 +12,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-//@TestContextConfiguration(beanCategories = {"One", "Two"},
-//        locations = "/eu/dirk/haase/application-context-4.xml"
-//)
 @MwsTestContextConfiguration({"One", "Two"})
 @ActiveProfiles("my-profile")
 public class MyTest {
