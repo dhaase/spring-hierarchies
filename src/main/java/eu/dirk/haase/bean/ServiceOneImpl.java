@@ -1,16 +1,8 @@
 package eu.dirk.haase.bean;
 
-import org.springframework.context.event.EventListener;
-
 public class ServiceOneImpl implements ServiceOne {
 
     private String value;
-
-    @EventListener
-    public void listener(MwsBeanImpl.MwsBeanApplicationEvent event) {
-        final MwsBeanImpl source = (MwsBeanImpl) event.getSource();
-        System.out.println(value + " Event: " + source.getName());
-    }
 
     @Override
     public String getValue() {

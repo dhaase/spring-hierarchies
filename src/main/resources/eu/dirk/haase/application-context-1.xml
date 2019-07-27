@@ -13,11 +13,6 @@
             <property name="name" value="eins"/>
         </bean>
 
-
-        <bean id="eins.Srv" class="eu.dirk.haase.bean.ServiceOneImpl" >
-            <property name="value" value="eins"/>
-        </bean>
-
     </beans>
 
 

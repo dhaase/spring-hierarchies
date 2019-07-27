@@ -3,7 +3,9 @@ package eu.dirk.haase.bean.hierarchy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -23,7 +25,7 @@ import java.util.function.Supplier;
  * k&ouml;nnen die {@code ApplicationContext}e erneut initialisiert
  * werden.
  */
-public interface ContextRepository {
+public interface ContextRepository extends Function<String[], ApplicationContext> {
 
     /**
      * Globale Instanz der {@link ContextRepository}.
@@ -42,6 +44,15 @@ public interface ContextRepository {
      * @return ein {@link Set} von allen {@link BeanType}s.
      */
     Set<ContextRepository.BeanType> allBeanTypes();
+
+    @Override
+    default ApplicationContext apply(String[] beanTypes) {
+        final Set<ContextRepository.BeanType> beanTypeSet = new HashSet<>();
+        for (String beanType : beanTypes) {
+            beanTypeSet.add(ContextRepository.BeanType.valueOf(beanType));
+        }
+        return findApplicationContextForBeansOf(beanTypeSet).get();
+    }
 
     /**
      * Wendet auf den gesuchten {@link ApplicationContext} und seinen abh&auml;ngigen

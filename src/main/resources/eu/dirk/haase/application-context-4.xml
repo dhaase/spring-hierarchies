@@ -9,14 +9,16 @@
 
     <beans>
 
+    </beans>
+
+    <beans profile="my-profile">
+
         <bean id="vier" class="eu.dirk.haase.bean.MwsBeanImpl" >
             <property name="name" value="vier"/>
         </bean>
 
-        <bean id="vier.Srv" class="eu.dirk.haase.bean.ServiceOneImpl" >
-            <property name="value" value="vier"/>
-        </bean>
     </beans>
+
 
 
 </beans>

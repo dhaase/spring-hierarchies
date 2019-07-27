@@ -13,9 +13,6 @@
             <property name="name" value="drei"/>
         </bean>
 
-        <bean id="drei.Srv" class="eu.dirk.haase.bean.ServiceOneImpl" >
-            <property name="value" value="drei"/>
-        </bean>
     </beans>
 
 

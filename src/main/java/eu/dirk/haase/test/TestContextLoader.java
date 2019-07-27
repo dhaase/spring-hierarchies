@@ -1,42 +1,89 @@
 package eu.dirk.haase.test;
 
-import eu.dirk.haase.bean.hierarchy.ContextRepository;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.support.GenericXmlContextLoader;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.AnnotatedElement;
 
-public class TestContextLoader implements SmartContextLoader {
+public abstract class TestContextLoader implements SmartContextLoader {
 
-    @Override
-    public void processContextConfiguration(ContextConfigurationAttributes contextConfigurationAttributes) {
+    private SmartContextLoader defaultSmartContextLoader = new NullSmartContextLoader();
 
+    public TestContextLoader() {
+        super();
     }
 
     @Override
-    public ApplicationContext loadContext(MergedContextConfiguration mergedContextConfiguration) throws Exception {
-        System.out.println(mergedContextConfiguration.getContextInitializerClasses());
-        final Class<?> testClass = mergedContextConfiguration.getTestClass();
-        final TestContextConfiguration testContextConfiguration = testClass.getAnnotation(TestContextConfiguration.class);
-        final ContextRepository contextHierarchy = ContextRepository.global();
-        final Set<ContextRepository.BeanType> beanTypeSet = new HashSet<>();
-        final String[] beanTypes = testContextConfiguration.beanCategories();
-        for (String beanType : beanTypes) {
-            beanTypeSet.add(ContextRepository.BeanType.valueOf(beanType));
+    public final void processContextConfiguration(ContextConfigurationAttributes contextConfigurationAttributes) {
+        if (contextConfigurationAttributes.hasLocations() && contextConfigurationAttributes.hasClasses()) {
+            throw new IllegalArgumentException("The Test Spring Context configuration " +
+                    "can define either 'locations' or 'classes', but not both.");
         }
-        return contextHierarchy.findApplicationContextForBeansOf(beanTypeSet).get();
+        if (contextConfigurationAttributes.hasLocations()) {
+            defaultSmartContextLoader = new GenericXmlContextLoader();
+        } else if (contextConfigurationAttributes.hasClasses()) {
+            defaultSmartContextLoader = new AnnotationConfigContextLoader();
+        } else {
+            defaultSmartContextLoader = new NullSmartContextLoader();
+        }
+        defaultSmartContextLoader.processContextConfiguration(contextConfigurationAttributes);
     }
 
     @Override
-    public String[] processLocations(Class<?> aClass, String... strings) {
-        return new String[0];
+    public final ApplicationContext loadContext(MergedContextConfiguration mergedContextConfiguration) throws Exception {
+        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedContextConfiguration.getTestClass();
+        final TestContextConfiguration testContextConfiguration = AnnotatedElementUtils.getMergedAnnotation(testClass, TestContextConfiguration.class);
+        final String[] beanTypes = testContextConfiguration.beanCategories();
+        ApplicationContext mainContext = findApplicationContextForBeansOf(beanTypes);
+        ApplicationContext testContext = defaultSmartContextLoader.loadContext(mergedContextConfiguration);
+        if (testContext == null) {
+            return mainContext;
+        } else {
+            ((ConfigurableApplicationContext) testContext).setParent(mainContext);
+            return testContext;
+        }
+    }
+
+    abstract protected ApplicationContext findApplicationContextForBeansOf(final String[] beanTypes);
+
+
+    @Override
+    public final String[] processLocations(Class<?> aClass, String... strings) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public ApplicationContext loadContext(String... strings) throws Exception {
-        return null;
+    public final ApplicationContext loadContext(String... strings) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+
+    static class NullSmartContextLoader implements SmartContextLoader {
+
+        @Override
+        public void processContextConfiguration(ContextConfigurationAttributes configAttributes) {
+
+        }
+
+        @Override
+        public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+            return null;
+        }
+
+        @Override
+        public String[] processLocations(Class<?> clazz, String... locations) {
+            return new String[0];
+        }
+
+        @Override
+        public ApplicationContext loadContext(String... locations) throws Exception {
+            return null;
+        }
     }
 }
