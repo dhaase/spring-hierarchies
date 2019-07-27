@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 //@TestContextConfiguration(beanCategories = {"One", "Two"},
 //        locations = "/eu/dirk/haase/application-context-4.xml"
 //)
-@MwsTestContextConfiguration(beanCategories = {"One", "Two"})
+@MwsTestContextConfiguration({"One", "Two"})
 @ActiveProfiles("my-profile")
 public class MyTest {
 
@@ -25,8 +25,8 @@ public class MyTest {
     @Resource(name = "zwei")
     private MwsBeanImpl zwei;
 
-    @Resource(name = "vier")
-    private MwsBeanImpl vier;
+//    @Resource(name = "vier")
+//    private MwsBeanImpl vier;
 
     @Test
     public void test_one() {

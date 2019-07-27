@@ -20,28 +20,28 @@ public abstract class TestContextLoader implements SmartContextLoader {
     }
 
     @Override
-    public final void processContextConfiguration(ContextConfigurationAttributes contextConfigurationAttributes) {
-        if (contextConfigurationAttributes.hasLocations() && contextConfigurationAttributes.hasClasses()) {
+    public final void processContextConfiguration(final ContextConfigurationAttributes ctxConfigAttributes) {
+        if (ctxConfigAttributes.hasLocations() && ctxConfigAttributes.hasClasses()) {
             throw new IllegalArgumentException("The Test Spring Context configuration " +
                     "can define either 'locations' or 'classes', but not both.");
         }
-        if (contextConfigurationAttributes.hasLocations()) {
+        if (ctxConfigAttributes.hasLocations()) {
             defaultSmartContextLoader = new GenericXmlContextLoader();
-        } else if (contextConfigurationAttributes.hasClasses()) {
+        } else if (ctxConfigAttributes.hasClasses()) {
             defaultSmartContextLoader = new AnnotationConfigContextLoader();
         } else {
             defaultSmartContextLoader = new NullSmartContextLoader();
         }
-        defaultSmartContextLoader.processContextConfiguration(contextConfigurationAttributes);
+        defaultSmartContextLoader.processContextConfiguration(ctxConfigAttributes);
     }
 
     @Override
-    public final ApplicationContext loadContext(MergedContextConfiguration mergedContextConfiguration) throws Exception {
-        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedContextConfiguration.getTestClass();
+    public final ApplicationContext loadContext(final MergedContextConfiguration mergedCtxConfig) throws Exception {
+        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedCtxConfig.getTestClass();
         final TestContextConfiguration testContextConfiguration = AnnotatedElementUtils.getMergedAnnotation(testClass, TestContextConfiguration.class);
         final String[] beanTypes = testContextConfiguration.beanCategories();
-        ApplicationContext mainContext = findApplicationContextForBeansOf(beanTypes);
-        ApplicationContext testContext = defaultSmartContextLoader.loadContext(mergedContextConfiguration);
+        final ApplicationContext mainContext = findApplicationContextForBeansOf(beanTypes);
+        final ApplicationContext testContext = defaultSmartContextLoader.loadContext(mergedCtxConfig);
         if (testContext == null) {
             return mainContext;
         } else {
@@ -54,12 +54,12 @@ public abstract class TestContextLoader implements SmartContextLoader {
 
 
     @Override
-    public final String[] processLocations(Class<?> aClass, String... strings) {
+    public final String[] processLocations(final Class<?> aClass, final String... strings) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final ApplicationContext loadContext(String... strings) throws Exception {
+    public final ApplicationContext loadContext(final String... strings) {
         throw new UnsupportedOperationException();
     }
 
@@ -67,23 +67,23 @@ public abstract class TestContextLoader implements SmartContextLoader {
     static class NullSmartContextLoader implements SmartContextLoader {
 
         @Override
-        public void processContextConfiguration(ContextConfigurationAttributes configAttributes) {
+        public void processContextConfiguration(final ContextConfigurationAttributes configAttributes) {
 
         }
 
         @Override
-        public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+        public ApplicationContext loadContext(final MergedContextConfiguration mergedConfig) {
             return null;
         }
 
         @Override
-        public String[] processLocations(Class<?> clazz, String... locations) {
-            return new String[0];
+        public String[] processLocations(final Class<?> clazz, final String... locations) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public ApplicationContext loadContext(String... locations) throws Exception {
-            return null;
+        public ApplicationContext loadContext(final String... locations) {
+            throw new UnsupportedOperationException();
         }
     }
 }

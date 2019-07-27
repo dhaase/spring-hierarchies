@@ -21,6 +21,6 @@ public @interface MwsTestContextConfiguration {
     String[] beanCategories() default {"One", "Two"};
 
     @AliasFor(annotation = ContextConfiguration.class, attribute = "locations")
-    String[] locations() default {"/eu/dirk/haase/application-context-4.xml"};
+    String[] locations() default {};
 
 }

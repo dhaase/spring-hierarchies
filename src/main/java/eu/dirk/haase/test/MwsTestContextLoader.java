@@ -13,8 +13,8 @@ public final class MwsTestContextLoader extends TestContextLoader {
 
     @Override
     protected ApplicationContext findApplicationContextForBeansOf(final String[] beanTypes) {
-        ApplicationContext cfg = new ClassPathXmlApplicationContext("/eu/dirk/haase/application-context-loader-config.xml");
-        Function<String[], ApplicationContext> supplier = cfg.getBean("contextRepository", Function.class);
+        final ApplicationContext cfg = new ClassPathXmlApplicationContext("/eu/dirk/haase/application-context-loader-config.xml");
+        final Function<String[], ApplicationContext> supplier = cfg.getBean("contextRepository", Function.class);
         return supplier.apply(beanTypes);
     }
 
