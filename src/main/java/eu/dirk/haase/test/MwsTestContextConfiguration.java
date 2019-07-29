@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.lang.annotation.*;
 
 /**
- * Diese Meta-Annotation f&uuml;r die MWS definiert die Standard
+ * Diese Meta-Annotation f&uuml;r die MWS, definiert die Standard
  * Application-Context Hierarchie f&uuml;r Integrations-Test von
  * JpaCommands.
  * <p>
@@ -17,7 +17,7 @@ import java.lang.annotation.*;
  * <ul>
  * <li>das die Application-Context Hierarchie der MWS aufgebaut wird</li>
  * <li>das die Namen f&uuml;r die konkrete Java-5-Enum
- * {@link ContextRepository.BeanType} verwendet werden kann</li>
+ * {@link ContextRepository.BeanType} verwendet werden muss</li>
  * <li>und das die {@link ContextRepository} abgefragt wird.</li>
  * </ul>
  *
@@ -43,7 +43,8 @@ public @interface MwsTestContextConfiguration {
      * als Basis f&uuml;r die Suche nach dem {@link ApplicationContext} in
      * der {@link ContextRepository}.
      * <p>
-     * Durch Definition dieses Attributes wird die Vorgabe-Definition ersetzt.
+     * Durch Definition dieses Attributes wird die Vorgabe-Definition dieser
+     * Annotation ersetzt.
      *
      * @see TestContextConfiguration#locations()
      */
@@ -56,7 +57,8 @@ public @interface MwsTestContextConfiguration {
      * <p>
      * Dieses Attribut hat dieselben Eigenschaften wie
      * {@link ContextConfiguration#locations()}, wobei
-     * {@link ContextConfiguration#inheritLocations()} auf {@code true} steht.
+     * {@link ContextConfiguration#inheritLocations()} stets auf {@code true}
+     * steht.
      *
      * @see ContextConfiguration#locations()
      */

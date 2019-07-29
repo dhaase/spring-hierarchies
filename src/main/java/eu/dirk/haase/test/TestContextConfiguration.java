@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.SmartContextLoader;
 import org.springframework.test.context.TestExecutionListeners;
 
 import java.lang.annotation.*;
@@ -19,9 +20,9 @@ import java.lang.annotation.*;
  * Durch die konkrete Loader-Klasse (Ableitungen des {@link TestContextLoader})
  * wird festgelegt:
  * <ul>
- * <li>welche Application-Context Hierarchie</li>
+ * <li>welche Application-Context Hierarchie verwendet wird</li>
  * <li>welche Namen f&uuml;r die konkrete Java-5-Enum
- * verwendet werden kann</li>
+ * verwendet werden m&uuml;ssen</li>
  * <li>und welche {@link ContextRepository} abgefragt wird.</li>
  * </ul>
  *
@@ -97,6 +98,10 @@ public @interface TestContextConfiguration {
     /**
      * Null-Implementation zur Verhinderung einer IllegalStateException beim Laden bzw. Erzeugen
      * {@link ApplicationContext}es.
+     * <p>
+     * Ist vermutlich ein Fehler des Spring-Frameworks, denn wenn der {@link SmartContextLoader}
+     * definiert ist, dann gibt es keine Notwendigkeit f&uuml;r weitere Definitionen und
+     * schon gar nicht f&uuml;r einen {@link ApplicationContextInitializer},
      */
     final class NullApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

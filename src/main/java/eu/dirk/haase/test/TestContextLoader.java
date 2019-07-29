@@ -15,8 +15,22 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.function.Supplier;
 
 /**
- * Strategieimplementation zum Laden eines {@link ApplicationContext} f&uuml;r
- * einen Integrationstest, der vom Spring TestContext Framework verwaltet wird.
+ * Abstrakte Strategieimplementation zum Laden eines {@link ApplicationContext}
+ * f&uuml;r einen Integrationstest, der vom Spring TestContext Framework
+ * verwaltet wird.
+ * <p>
+ * Ableitungen dieser Klasse k&ouml;nnen und m&uuml;ssen nur die Methode
+ * {@link TestContextLoader#findApplicationContextForBeansOf(String[])}
+ * implementieren:
+ * <pre><code>
+ * &#64;Override
+ * protected ApplicationContext findApplicationContextForBeansOf(final String[] beanTypes) {
+ *     final ApplicationContext cfg = new ClassPathXmlApplicationContext("/eu/dirk/haase/application-context-loader-config.xml");
+ *     final Function<String[], ApplicationContext> supplier = cfg.getBean("contextRepository", Function.class);
+ *     return supplier.apply(beanTypes);
+ * }
+ *
+ * </code></pre>
  */
 public abstract class TestContextLoader implements SmartContextLoader {
 

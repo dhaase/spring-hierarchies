@@ -19,8 +19,8 @@ public final class MwsTestContextLoader extends TestContextLoader {
     }
 
     /**
-     * Liefert auf Basis der angegebenen {@link ContextRepository.BeanType}s einen {@link Supplier}
-     * der einen {@link ApplicationContext} liefert.
+     * Liefert auf Basis der angegebenen {@link ContextRepository.BeanType}s einen
+     * {@link ApplicationContext}.
      *
      * @param beanTypes Array von Namen der Java-5-Enum {@link ContextRepository.BeanType}s
      *                  als Basis f&uuml;r die Suche nach dem {@link ApplicationContext} in
