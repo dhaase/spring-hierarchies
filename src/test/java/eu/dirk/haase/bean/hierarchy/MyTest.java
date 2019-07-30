@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@MwsTestContextConfiguration({"One", "Two"})
+@MwsTestContextConfiguration(beanCategories = {"One", "Two"})
 @ActiveProfiles("my-profile")
 public class MyTest {
 

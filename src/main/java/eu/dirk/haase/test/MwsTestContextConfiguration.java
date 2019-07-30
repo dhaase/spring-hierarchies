@@ -52,6 +52,30 @@ public @interface MwsTestContextConfiguration {
     String[] beanCategories() default {"One", "Two"};
 
     /**
+     * Schaltet bei {@code true} die Konfiguration basierend auf Annotationen ein.
+     * <p>
+     * In Regel m&ouml;chte man das der {@link ApplicationContext} auch Annotationen
+     * wie {@code @Autowired} entsprechend beachtet, daher ist der Vorgabe-Wert auf
+     * {@code true} gesetzt.
+     * <p>
+     * Den gleichen Effekt erreicht man auch dann, wenn in der XML-Konfiguration
+     * durchg&auml;ngig {@code <context:annotation-config/>} angegeben worden
+     * ist.
+     * <p>
+     * Es ist daher durchaus sinnvoll diesen Schalter {@code false} zu stellen
+     * um sicherzustellen das in der XML-Konfiguration
+     * {@code <context:annotation-config/>} angegeben worden ist.
+     * <p>
+     * Ist dieser Schalter auf {@code false} gesetzt, dann werden Annotationen
+     * wie {@code @Autowired} schlicht ignoriert.
+     *
+     * @return schaltet bei {@code true} die Konfiguration basierend auf
+     * Annotationen ein.
+     */
+    @AliasFor(annotation = TestContextConfiguration.class, attribute = "enableAnnotationBasedConfiguration")
+    boolean enableAnnotationBasedConfiguration() default true;
+
+    /**
      * Die Ressourcen-Positionen, die zum Laden eines ApplicationContext
      * verwendet werden sollen.
      * <p>

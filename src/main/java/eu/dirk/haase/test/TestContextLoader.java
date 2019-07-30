@@ -34,42 +34,63 @@ import java.util.function.Supplier;
  */
 public abstract class TestContextLoader implements SmartContextLoader {
 
-    private SmartContextLoader smartContextLoader = new NullSmartContextLoader();
+    private ContextConfigurationAttributes contextConfigurationAttributes;
 
     public TestContextLoader() {
         super();
     }
 
     /**
-     * Verarbeitet die {@link ContextConfigurationAttributes} für eine bestimmte Testklasse.
-     * <p>
-     * Ist die Testklasse mit annotiert mit Context-Configurationen basierend:
-     * <ul>
-     * <li>auf XML, dann wird der {@link GenericXmlContextLoader}
-     * verwendet.</li>
-     * <li>auf Configuration-Klassen,
-     * dann wird der {@link AnnotationConfigContextLoader} verwendet.</li>
-     * </ul>
-     * <p>
-     * Ist die Testklasse mit keiner zus&auml;tzlichen Context-Configuration ausgestattet,
-     * dann wird kein {@link SmartContextLoader} verwendet.
+     * Liefert auf Basis der angegebenen {@link ContextRepository.BeanType}s einen {@link Supplier}
+     * der einen {@link ApplicationContext} liefert.
      *
-     * @param ctxConfigAttributes die zu verarbeitenden {@link ContextConfigurationAttributes}.
+     * @param beanTypes Array von Namen der Java-5-Enum {@link ContextRepository.BeanType}s
+     *                  als Basis f&uuml;r die Suche nach dem {@link ApplicationContext} in
+     *                  der {@link ContextRepository}.
+     * @return der gefundene {@link ApplicationContext}.
+     * @throws IllegalArgumentException wird ausgel&ouml;st wenn keine
+     *                                  {@code ApplicationContext}-Defintion
+     *                                  gefunden wurde.
      */
-    @Override
-    public final void processContextConfiguration(final ContextConfigurationAttributes ctxConfigAttributes) {
-        if (ctxConfigAttributes.hasLocations() && ctxConfigAttributes.hasClasses()) {
-            throw new IllegalArgumentException("The Test Spring Context configuration " +
-                    "can define either 'locations' or 'classes', but not both.");
-        }
-        if (ctxConfigAttributes.hasLocations()) {
-            this.smartContextLoader = new GenericXmlContextLoader();
-        } else if (ctxConfigAttributes.hasClasses()) {
-            this.smartContextLoader = new AnnotationConfigContextLoader();
+    abstract protected ApplicationContext findApplicationContextForBeansOf(final String[] beanTypes);
+
+    /**
+     * Ein Array von Namen der Java-5-Enum {@link ContextRepository.BeanType}s.
+     * <p>
+     * Sie dienen als Basis f&uuml;r die Suche nach dem passenden
+     * {@link ApplicationContext}.
+     *
+     * @param mergedCtxConfig Die Konfiguration des zusammengef&uuml;hrten Kontexts,
+     *                        die zum Laden des {@link ApplicationContext} verwendet werden soll.
+     * @return ein Array von Namen der Java-5-Enum.
+     */
+    private TestContextConfiguration getMergedAnnotation(final MergedContextConfiguration mergedCtxConfig) {
+        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedCtxConfig.getTestClass();
+        return AnnotatedElementUtils.getMergedAnnotation(testClass, TestContextConfiguration.class);
+    }
+
+    private SmartContextLoader createContextLoader(final boolean isAnnotationBasedConfigurationEnabled) {
+        SmartContextLoader smartContextLoader;
+        if (isAnnotationBasedConfigurationEnabled) {
+            if (this.contextConfigurationAttributes.hasLocations()) {
+                // Es gibt weitere XML-basierende Konfigurationen:
+                smartContextLoader = new GenericXmlContextLoader();
+            } else if (this.contextConfigurationAttributes.hasClasses()) {
+                // Es gibt weitere Annotations-basierende Konfigurationen:
+                smartContextLoader = new AnnotationConfigContextLoader();
+            } else {
+                // Es gibt keine weitere Konfiguration, daher
+                // schalte nur die Annotationen ein:
+                smartContextLoader = new GenericXmlContextLoader();
+            }
         } else {
-            this.smartContextLoader = new NullSmartContextLoader();
+            // Es gibt keine weitere Konfiguration und es
+            // auch keine Annotations-basierende Konfiguration
+            // eingeschaltet werden:
+            smartContextLoader = new NullSmartContextLoader();
         }
-        this.smartContextLoader.processContextConfiguration(ctxConfigAttributes);
+        smartContextLoader.processContextConfiguration(this.contextConfigurationAttributes);
+        return smartContextLoader;
     }
 
     /**
@@ -99,57 +120,17 @@ public abstract class TestContextLoader implements SmartContextLoader {
      */
     @Override
     public final ApplicationContext loadContext(final MergedContextConfiguration mergedCtxConfig) throws Exception {
-        final String[] beanTypes = getBeanCategories(mergedCtxConfig);
+        final TestContextConfiguration testContextConfiguration = getMergedAnnotation(mergedCtxConfig);
+        final SmartContextLoader smartContextLoader = createContextLoader(testContextConfiguration.enableAnnotationBasedConfiguration());
+        final String[] beanTypes = testContextConfiguration.beanCategories();
         final ApplicationContext mainContext = findApplicationContextForBeansOf(beanTypes);
-        final ApplicationContext testContext = this.smartContextLoader.loadContext(mergedCtxConfig);
+        final ApplicationContext testContext = smartContextLoader.loadContext(mergedCtxConfig);
         if (testContext == null) {
             return mainContext;
         } else {
             ((ConfigurableApplicationContext) testContext).setParent(mainContext);
             return testContext;
         }
-    }
-
-    /**
-     * Ein Array von Namen der Java-5-Enum {@link ContextRepository.BeanType}s.
-     * <p>
-     * Sie dienen als Basis f&uuml;r die Suche nach dem passenden
-     * {@link ApplicationContext}.
-     *
-     * @param mergedCtxConfig Die Konfiguration des zusammengef&uuml;hrten Kontexts,
-     *                        die zum Laden des {@link ApplicationContext} verwendet werden soll.
-     * @return ein Array von Namen der Java-5-Enum.
-     */
-    private String[] getBeanCategories(final MergedContextConfiguration mergedCtxConfig) {
-        final Class<? extends AnnotatedElement> testClass = (Class<? extends AnnotatedElement>) mergedCtxConfig.getTestClass();
-        final TestContextConfiguration testContextConfiguration = AnnotatedElementUtils.getMergedAnnotation(testClass, TestContextConfiguration.class);
-        return testContextConfiguration.beanCategories();
-    }
-
-    /**
-     * Liefert auf Basis der angegebenen {@link ContextRepository.BeanType}s einen {@link Supplier}
-     * der einen {@link ApplicationContext} liefert.
-     *
-     * @param beanTypes Array von Namen der Java-5-Enum {@link ContextRepository.BeanType}s
-     *                  als Basis f&uuml;r die Suche nach dem {@link ApplicationContext} in
-     *                  der {@link ContextRepository}.
-     * @return der gefundene {@link ApplicationContext}.
-     * @throws IllegalArgumentException wird ausgel&ouml;st wenn keine
-     *                                  {@code ApplicationContext}-Defintion
-     *                                  gefunden wurde.
-     */
-    abstract protected ApplicationContext findApplicationContextForBeansOf(final String[] beanTypes);
-
-
-    /**
-     * Diese Methode wird nicht aufgerufen und wird nicht unterst&uuml;tzt.
-     * <p>
-     * Da diese Klasse vom Typ {@link SmartContextLoader} ist gibt es keine sinnvolle
-     * Implementation f&uuml;r diese Methode {@link ContextLoader#processLocations(Class, String...)}.
-     */
-    @Override
-    public final String[] processLocations(final Class<?> aClass, final String... strings) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -163,26 +144,61 @@ public abstract class TestContextLoader implements SmartContextLoader {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Verarbeitet die {@link ContextConfigurationAttributes} für eine bestimmte Testklasse.
+     * <p>
+     * Ist die Testklasse mit annotiert mit Context-Configurationen basierend:
+     * <ul>
+     * <li>auf XML, dann wird der {@link GenericXmlContextLoader}
+     * verwendet.</li>
+     * <li>auf Configuration-Klassen,
+     * dann wird der {@link AnnotationConfigContextLoader} verwendet.</li>
+     * </ul>
+     * <p>
+     * Ist die Testklasse mit keiner zus&auml;tzlichen Context-Configuration ausgestattet,
+     * dann wird kein {@link SmartContextLoader} verwendet.
+     *
+     * @param ctxConfigAttributes die zu verarbeitenden {@link ContextConfigurationAttributes}.
+     */
+    @Override
+    public final void processContextConfiguration(final ContextConfigurationAttributes ctxConfigAttributes) {
+        if (ctxConfigAttributes.hasLocations() && ctxConfigAttributes.hasClasses()) {
+            throw new IllegalArgumentException("The Test Spring Context configuration " +
+                    "can define either 'locations' or 'classes', but not both.");
+        }
+        this.contextConfigurationAttributes = ctxConfigAttributes;
+    }
+
+    /**
+     * Diese Methode wird nicht aufgerufen und wird nicht unterst&uuml;tzt.
+     * <p>
+     * Da diese Klasse vom Typ {@link SmartContextLoader} ist gibt es keine sinnvolle
+     * Implementation f&uuml;r diese Methode {@link ContextLoader#processLocations(Class, String...)}.
+     */
+    @Override
+    public final String[] processLocations(final Class<?> aClass, final String... strings) {
+        throw new UnsupportedOperationException();
+    }
 
     static class NullSmartContextLoader implements SmartContextLoader {
 
-        @Override
-        public void processContextConfiguration(final ContextConfigurationAttributes configAttributes) {
-
-        }
 
         @Override
-        public ApplicationContext loadContext(final MergedContextConfiguration mergedConfig) {
+        public ApplicationContext loadContext(final MergedContextConfiguration mergedConfig) throws Exception {
             return null;
         }
 
         @Override
-        public String[] processLocations(final Class<?> clazz, final String... locations) {
+        public ApplicationContext loadContext(final String... locations) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public ApplicationContext loadContext(final String... locations) {
+        public void processContextConfiguration(final ContextConfigurationAttributes configAttributes) {
+        }
+
+        @Override
+        public String[] processLocations(final Class<?> clazz, final String... locations) {
             throw new UnsupportedOperationException();
         }
     }
