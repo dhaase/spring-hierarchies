@@ -63,7 +63,7 @@ public @interface MwsTestContextConfiguration {
      * ist.
      * <p>
      * Es ist daher durchaus sinnvoll diesen Schalter {@code false} zu stellen
-     * um sicherzustellen das in der XML-Konfiguration
+     * um so sicherzustellen das in der XML-Konfiguration
      * {@code <context:annotation-config/>} angegeben worden ist.
      * <p>
      * Ist dieser Schalter auf {@code false} gesetzt, dann werden Annotationen

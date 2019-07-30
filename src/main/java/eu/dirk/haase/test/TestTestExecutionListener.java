@@ -1,5 +1,7 @@
 package eu.dirk.haase.test;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 
@@ -12,6 +14,7 @@ public class TestTestExecutionListener implements TestExecutionListener {
     @Override
     public void prepareTestInstance(final TestContext testContext) throws Exception {
         System.out.println("prepareTestInstance: " );
+        applyApplicationContextAwareness(testContext.getTestInstance(), testContext.getApplicationContext());
     }
 
     @Override
@@ -28,4 +31,12 @@ public class TestTestExecutionListener implements TestExecutionListener {
     public void afterTestClass(final TestContext testContext) throws Exception {
         System.out.println("afterTestClass: ");
     }
+
+
+    private void applyApplicationContextAwareness(final Object testClassInstance, final ApplicationContext applicationContext) {
+        if (testClassInstance instanceof ApplicationContextAware) {
+            ((ApplicationContextAware)testClassInstance).setApplicationContext(applicationContext);
+        }
+    }
+
 }
